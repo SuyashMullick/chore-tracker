@@ -3,14 +3,9 @@ import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class TaskPage extends StatefulWidget {
+class TaskPage extends StatelessWidget {
   const TaskPage({super.key});
 
-  @override
-  TaskPageState createState() => TaskPageState();
-}
-
-class TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -73,7 +68,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
   late final TextEditingController _taskNameEditingController;
   late final TextEditingController _taskPointsController;
   final _formKey = GlobalKey<FormState>();
-  int? selectedPoints;
+  int? _selectedPoints;
 
   @override
   void initState() {
@@ -115,7 +110,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
             maxLines: 2,
           ),
           DropdownButtonFormField<int>(
-            value: selectedPoints,
+            value: _selectedPoints,
             hint: const Text('Select the points for the task'),
             items: List.generate(
               10,
@@ -129,7 +124,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
             ),
             onChanged: (value) {
               setState(() {
-                selectedPoints = value;
+                _selectedPoints = value;
               });
             },
             validator: (value) {
@@ -154,10 +149,10 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
                 return;
               }
               if (_taskNameEditingController.text.isNotEmpty &&
-                  selectedPoints != null) {
+                  _selectedPoints != null) {
                 final Task newTask = Task(
                   name: _taskNameEditingController.text,
-                  points: selectedPoints,
+                  points: _selectedPoints,
                   creator: Member(),
                   desc: _taskDescEditingController.text,
                 );
@@ -165,7 +160,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
                 _taskNameEditingController.clear();
                 _taskDescEditingController.clear();
                 _taskPointsController.clear();
-                selectedPoints = null;
+                _selectedPoints = null;
                 Navigator.of(context).pop();
               }
             },
