@@ -75,6 +75,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
   late final TextEditingController _taskDescEditingController;
   late final TextEditingController _taskNameEditingController;
   late final TextEditingController _taskPointsController;
+  final _formKey = GlobalKey<FormState>();
   int? selectedPoints;
 
   @override
@@ -87,72 +88,89 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('New Task'),
-      content: Column(children: [
-        TextField(
-          controller: _taskNameEditingController,
-          decoration: const InputDecoration(
-            labelText: 'Name of the task',
-          ),
-          maxLines: 1,
-        ),
-        TextField(
-          controller: _taskDescEditingController,
-          decoration: const InputDecoration(
-            labelText: 'Description of the task (optional)',
-          ),
-          maxLines: 2,
-        ),
-        DropdownButton<int>(
-          value: selectedPoints,
-          hint: const Text('Select the points for the task'),
-          items: List.generate(
-            10,
-            (i) {
-              int points = i + 1;
-              return DropdownMenuItem(
-                value: points,
-                child: Text(points.toString()),
-              );
+    return Form(
+      key: _formKey,
+      child: AlertDialog(
+        title: const Text('New Task'),
+        content: Column(children: [
+          TextFormField(
+            controller: _taskNameEditingController,
+            decoration: const InputDecoration(
+              labelText: 'Name of the task',
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'A name has to be set';
+              }
+              return null;
             },
           ),
-          onChanged: (value) {
-            setState(() {
-              selectedPoints = value;
-            });
-          },
-        )
-      ]),
-      actionsAlignment: MainAxisAlignment.spaceBetween,
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () {
-            if (_taskNameEditingController.text.isNotEmpty &&
-                selectedPoints != null) {
-              final Task newTask = Task(
-                name: _taskNameEditingController.text,
-                points: selectedPoints,
-                creator: Member(),
-                desc: _taskDescEditingController.text,
-              );
-              widget.taskViewModel.addTask(newTask);
-              _taskNameEditingController.clear();
-              _taskDescEditingController.clear();
-              _taskPointsController.clear();
-              selectedPoints = null;
+          TextField(
+            controller: _taskDescEditingController,
+            decoration: const InputDecoration(
+              labelText: 'Description of the task (optional)',
+            ),
+            maxLines: 2,
+          ),
+          DropdownButtonFormField<int>(
+            value: selectedPoints,
+            hint: const Text('Select the points for the task'),
+            items: List.generate(
+              10,
+              (i) {
+                int points = i + 1;
+                return DropdownMenuItem(
+                  value: points,
+                  child: Text(points.toString()),
+                );
+              },
+            ),
+            onChanged: (value) {
+              setState(() {
+                selectedPoints = value;
+              });
+            },
+            validator: (value) {
+              if (value == null) {
+                return 'Points have to be selected';
+              }
+              return null;
+            },
+          )
+        ]),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
+        actions: [
+          TextButton(
+            onPressed: () {
               Navigator.of(context).pop();
-            }
-          },
-          child: const Text('Save'),
-        ),
-      ],
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (!_formKey.currentState!.validate()) {
+                return;
+              }
+              if (_taskNameEditingController.text.isNotEmpty &&
+                  selectedPoints != null) {
+                final Task newTask = Task(
+                  name: _taskNameEditingController.text,
+                  points: selectedPoints,
+                  creator: Member(),
+                  desc: _taskDescEditingController.text,
+                );
+                widget.taskViewModel.addTask(newTask);
+                _taskNameEditingController.clear();
+                _taskDescEditingController.clear();
+                _taskPointsController.clear();
+                selectedPoints = null;
+                Navigator.of(context).pop();
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
     );
   }
 }
