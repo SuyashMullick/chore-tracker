@@ -25,8 +25,13 @@ class TaskPageState extends State<TaskPage> {
               widgets.add(
                 Card(
                   child: ListTile(
-                      leading: const Icon(Icons.task),
-                      title: Text(task.getDesc())),
+                    leading: const Icon(Icons.task),
+                    title: Text(task.getDesc()),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () => taskViewModel.removeTask(task),
+                    ),
+                  ),
                 ),
               );
             }

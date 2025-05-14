@@ -87,10 +87,12 @@ class TaskViewModel extends ChangeNotifier {
   }
 
   removeTask(Task task) {
+    bool success = false;
     if (_tasks.contains(task)) {
-      return _tasks.remove(task);
+      success = _tasks.remove(task);
     }
-    return false;
+    notifyListeners();
+    return success;
   }
 
   List<Task> getAllTasks() {
