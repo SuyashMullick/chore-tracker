@@ -26,7 +26,7 @@ class TaskPageState extends State<TaskPage> {
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.task),
-                    title: Text(task.getDesc()),
+                    title: Text(task.getName()),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () => taskViewModel.removeTask(task),
@@ -102,6 +102,9 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
               if (value == null || value.trim().isEmpty) {
                 return 'A name has to be set';
               }
+              if (widget.taskViewModel.isTaskExisting(value)) {
+                return 'A task with the same name already exists';
+              }
               return null;
             },
           ),
@@ -167,7 +170,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
                 Navigator.of(context).pop();
               }
             },
-            child: const Text('Save'),
+            child: const Text('OK'),
           ),
         ],
       ),

@@ -81,8 +81,18 @@ class TaskViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  isTaskExisting(String taskName) {
+    for (Task task in _tasks) {
+      if (task.getName() == taskName) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   addTask(Task task) {
     _tasks.add(task);
+    // task has to be added to db?
     notifyListeners();
   }
 
@@ -91,6 +101,7 @@ class TaskViewModel extends ChangeNotifier {
     if (_tasks.contains(task)) {
       success = _tasks.remove(task);
     }
+    // task has to be deleted on db?
     notifyListeners();
     return success;
   }
