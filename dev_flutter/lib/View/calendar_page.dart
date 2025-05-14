@@ -53,7 +53,7 @@ class CalendarPageState extends State<CalendarPage> {
                   itemCount: tasksForDay.length,
                   itemBuilder: (context, index) {
                     final task = tasksForDay[index];
-                    return ListTile(title: Text(task.getDesc()));
+                    return ListTile(title: Text(task.getName()));
                   },
                 );
               },

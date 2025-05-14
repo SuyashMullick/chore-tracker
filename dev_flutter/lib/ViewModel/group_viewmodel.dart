@@ -1,5 +1,3 @@
-// to do: make group viewmodel with members and integrate it into tab for group
-
 import 'package:flutter/material.dart';
 
 class GroupViewModel extends ChangeNotifier {

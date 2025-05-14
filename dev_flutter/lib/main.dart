@@ -1,4 +1,8 @@
 import 'package:dev_flutter/View/calendar_page.dart';
+import 'package:dev_flutter/View/group_page.dart';
+import 'package:dev_flutter/View/profile_page.dart';
+import 'package:dev_flutter/View/statistics_page.dart';
+import 'package:dev_flutter/View/task_page.dart';
 import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +48,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -79,77 +82,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: <Widget>[
-        /// Calendar
         const CalendarPage(),
-
-        /// Tasks page
-        ChangeNotifierProvider(
-          create: (context) => TaskViewModel(),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:
-                Consumer<TaskViewModel>(builder: (context, taskViewModel, _) {
-              List<Task> tasks = taskViewModel.getAllTasks();
-              List<Widget> widgets = [];
-              for (var task in tasks) {
-                widgets.add(Card(
-                  child: ListTile(
-                      leading: const Icon(Icons.task),
-                      title: Text(task.getDesc())),
-                ));
-              }
-              return Column(
-                children: widgets,
-              );
-            }),
-          ),
-        ),
-
-        /// Group page
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              Card(
-                child: ListTile(
-                  leading: Icon(Icons.task),
-                  title: Text('Member 1'),
-                  subtitle: Text('This is a member'),
-                ),
-              ),
-              Card(
-                child: ListTile(
-                  leading: Icon(Icons.task),
-                  title: Text('Member 2'),
-                  subtitle: Text('This is a member'),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        /// Statistics page
-        Card(
-          shadowColor: Colors.transparent,
-          margin: const EdgeInsets.all(8.0),
-          child: SizedBox.expand(
-            child: Center(
-                child: Text('Statistics', style: theme.textTheme.titleLarge)),
-          ),
-        ),
-
-        /// Profile page
-        Card(
-          shadowColor: Colors.transparent,
-          margin: const EdgeInsets.all(8.0),
-          child: SizedBox.expand(
-            child: Center(
-                child: Text('Profile', style: theme.textTheme.titleLarge)),
-          ),
-        ),
+        const TaskPage(),
+        const GroupPage(),
+        const StatisticsPage(),
+        const ProfilePage(),
       ][currentPageIndex],
     );
   }
 }
-
-

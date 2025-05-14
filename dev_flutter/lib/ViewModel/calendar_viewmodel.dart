@@ -44,17 +44,19 @@ class CalendarViewModel extends ChangeNotifier {
         DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
     addTask(today.add(const Duration(days: 1)),
-        Task(desc: "Vacuum cleaning", creator: Member()));
-    addTask(today, Task(desc: "Cooking", creator: Member()));
+        Task(name: "Vacuum cleaning", points: 1, creator: Member()));
+    addTask(today, Task(name: "Cooking", points: 1, creator: Member()));
     addTask(today.subtract(const Duration(days: 3)),
-        Task(desc: "Feed the cat", creator: Member()));
+        Task(name: "Feed the cat", points: 2, creator: Member()));
+    addTask(
+        today.subtract(const Duration(days: 3)),
+        Task(
+            name: "Send invitations for birthday",
+            points: 10,
+            creator: Member()));
     addTask(today.subtract(const Duration(days: 3)),
-        Task(desc: "Send invitations for birthday", creator: Member()));
-    addTask(today.subtract(const Duration(days: 3)),
-        Task(desc: "Drive kids to school", creator: Member()));
+        Task(name: "Drive kids to school", points: 1, creator: Member()));
 
     notifyListeners();
   }
 }
-
-
