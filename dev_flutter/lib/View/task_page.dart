@@ -13,50 +13,47 @@ class TaskPage extends StatefulWidget {
 class TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => TaskViewModel(),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Consumer<TaskViewModel>(
-          builder: (context, taskViewModel, _) {
-            List<Task> tasks = taskViewModel.getAllTasks();
-            List<Widget> widgets = [];
-            for (var task in tasks) {
-              widgets.add(
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.task),
-                    title: Text(task.getName()),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => taskViewModel.removeTask(task),
-                    ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Consumer<TaskViewModel>(
+        builder: (context, taskViewModel, _) {
+          List<Task> tasks = taskViewModel.getAllTasks();
+          List<Widget> widgets = [];
+          for (var task in tasks) {
+            widgets.add(
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.task),
+                  title: Text(task.getName()),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => taskViewModel.removeTask(task),
                   ),
                 ),
-              );
-            }
-            return Stack(
-              children: [
-                Column(children: widgets),
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return CreateTaskDialog(taskViewModel: taskViewModel);
-                        },
-                      );
-                    },
-                    child: const Icon(Icons.add),
-                  ),
-                ),
-              ],
+              ),
             );
-          },
-        ),
+          }
+          return Stack(
+            children: [
+              Column(children: widgets),
+              Positioned(
+                bottom: 16,
+                right: 16,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return CreateTaskDialog(taskViewModel: taskViewModel);
+                      },
+                    );
+                  },
+                  child: const Icon(Icons.add),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -91,9 +88,10 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
     return Form(
       key: _formKey,
       child: AlertDialog(
-        title: const Text('New Task'),
+        title: const Text('Create a task'),
         content: Column(children: [
           TextFormField(
+            maxLength: 20,
             controller: _taskNameEditingController,
             decoration: const InputDecoration(
               labelText: 'Name of the task',
@@ -109,6 +107,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
             },
           ),
           TextField(
+            maxLength: 30,
             controller: _taskDescEditingController,
             decoration: const InputDecoration(
               labelText: 'Description of the task (optional)',

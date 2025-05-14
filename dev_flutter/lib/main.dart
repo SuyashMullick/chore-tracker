@@ -81,13 +81,19 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: <Widget>[
-        const CalendarPage(),
-        const TaskPage(),
-        const GroupPage(),
-        const StatisticsPage(),
-        const ProfilePage(),
-      ][currentPageIndex],
+      body: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => CalendarViewModel()),
+          ChangeNotifierProvider(create: (_) => TaskViewModel()),
+        ],
+        child: <Widget>[
+          const CalendarPage(),
+          const TaskPage(),
+          const GroupPage(),
+          const StatisticsPage(),
+          const ProfilePage(),
+        ][currentPageIndex],
+      ),
     );
   }
 }

@@ -6,16 +6,19 @@ import 'package:flutter/material.dart';
 
 const baseURL = 'http://127.0.0.1:8000/api';
 
-// class PlannedTask {
-//   late final _task;
-//   late final _date;
-//   final List<Member> _assignees = [];
+class PlannedTask {
+  late final _task;
+  late final List<Member> _assignees;
 
-//   PlannedTask({required date, required task}) {
-//     _task = task;
-//     _date = date;
-//   }
-// }
+  PlannedTask({required assignees, required task}) {
+    _task = task;
+    _assignees = assignees;
+  }
+
+  getName() {
+    return _task.getName();
+  }
+}
 
 class Task {
   late int _points;
