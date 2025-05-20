@@ -1,14 +1,11 @@
-import 'dart:convert';
+import 'package:dev_flutter/Model/service.dart';
 import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 
-const baseURL = 'http://127.0.0.1:8000/api';
-
 class PlannedTask {
   late final _task;
-  late final List<Member> _assignees;
+  late final List<User> _assignees;
 
   PlannedTask({required assignees, required task}) {
     _task = task;
@@ -25,6 +22,15 @@ class Task {
   late String _name;
   late Group _group;
   String? _desc;
+
+  factory Task.fromDTO(TaskDTO task, GroupDTO group) {
+    return Task(
+      name: task.name,
+      group: Group(desc: group.name),
+      points: task.points,
+      desc: task.note
+    );
+  }
 
   Task({required name, required Group group, required points, desc}) {
     _desc = desc;
@@ -61,25 +67,16 @@ class TaskViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadTasks() async {
-    const url = '$baseURL/tasks/';
+    // call service here later
 
-    try {
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        List<dynamic> tasks = json.decode(response.body);
-
-        print(tasks);
-      } else {
-        throw Exception('Failed to load tasks');
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
     // for test
-    _tasks.add(Task(name: "Cooking", group: Group(desc: "Group 1"), points: 4, desc: "Cooking pasta"));
-    _tasks.add(Task(name: "Laundry", group: Group(desc: "Group 1"), points: 5, desc: "Washing"));
-    _tasks.add(Task(name: "Planning", group: Group(desc: "Group 2"), points: 1, desc: "Planning dinner"));
+    GroupViewModel groupViewModel = GroupViewModel();
+    List<Group> groups = groupViewModel.getGroups();
+    Group group1 = groups[0];
+    Group group2 = groups[1];
+    _tasks.add(Task(name: "Cooking", group: group1, points: 4, desc: "Cooking pasta"));
+    _tasks.add(Task(name: "Laundry", group: group2, points: 5, desc: "Washing"));
+    _tasks.add(Task(name: "Planning", group: group2, points: 1, desc: "Planning dinner"));
 
     notifyListeners();
   }

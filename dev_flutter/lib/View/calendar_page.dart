@@ -2,8 +2,10 @@ import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:multiselect/multiselect.dart';
 import 'package:provider/provider.dart';
 import 'package:weekview_calendar/weekview_calendar.dart';
+import 'package:intl/intl.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -99,15 +101,16 @@ class PlanTaskDialog extends StatefulWidget {
 }
 
 class CreateTaskDialogState extends State<PlanTaskDialog> {
-  late final TextEditingController _taskEditingController;
+  late final TextEditingController _pointsEditingController;
   final _formKey = GlobalKey<FormState>();
   Task? _selectedTask;
-  List<Member> _selectedMembers = [];
+  List<User> _selectedMembers = [];
+  String _selectedMembersShow = "";
 
   @override
   void initState() {
     super.initState();
-    _taskEditingController = TextEditingController();
+    _pointsEditingController = TextEditingController();
   }
 
   @override
@@ -119,7 +122,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(widget.date.toString()),
+            Text(DateFormat('yyyy-MM-dd').format(widget.date)),
             DropdownButtonFormField<Task>(
               value: _selectedTask,
               hint: const Text('Select a task'),
@@ -142,37 +145,16 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                 return null;
               },
             ),
-            DropdownButtonFormField(
-              onChanged:
-                  (x) {}, // This is required but not used in this custom implementation
-              items: widget.groupViewModel.getAllMembers().map((member) {
-                return DropdownMenuItem(
-                  value: member,
-                  child: StatefulBuilder(
-                    builder: (context, setStateCbx) {
-                      return Row(
-                        children: [
-                          // select/deselect members
-                          Checkbox(
-                            value: _selectedMembers.contains(member),
-                            onChanged: (isSelected) {
-                              if (isSelected == true) {
-                                _selectedMembers.add(member);
-                              } else {
-                                _selectedMembers.remove(member);
-                              }
-                              setStateCbx(() {});
-                              setState(() {});
-                            },
-                          ),
-                          const SizedBox(width: 10),
-                          Text(member.getName()),
-                        ],
-                      );
-                    },
-                  ),
-                );
-              }).toList(),
+            DropDownMultiSelect<User>(
+              selectedValuesStyle: TextStyle(color: Colors.transparent),
+              onChanged: (List<User> selected) {
+                setState(() {
+                  _selectedMembers =selected;
+                });
+              },
+              options: widget.groupViewModel.getAllMembers(),
+              selectedValues: _selectedMembers,
+              //whenEmpty: 'Select assignees',
             ),
           ],
         ),
