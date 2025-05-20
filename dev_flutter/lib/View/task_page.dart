@@ -10,8 +10,8 @@ class TaskPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Consumer<TaskViewModel>(
-        builder: (context, taskViewModel, _) {
+      child: Consumer2<TaskViewModel, GroupViewModel>(
+        builder: (context, taskViewModel, groupViewModel, _) {
           List<Task> tasks = taskViewModel.getAllTasks();
           List<Widget> widgets = [];
           for (var task in tasks) {
@@ -20,6 +20,7 @@ class TaskPage extends StatelessWidget {
                 child: ListTile(
                   leading: const Icon(Icons.task),
                   title: Text(task.getName()),
+                  subtitle: Text(task.getGroup().getDesc()),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () => taskViewModel.removeTask(task),
@@ -39,7 +40,9 @@ class TaskPage extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        return CreateTaskDialog(taskViewModel: taskViewModel);
+                        return CreateTaskDialog(
+                            taskViewModel: taskViewModel,
+                            groupViewModel: groupViewModel);
                       },
                     );
                   },
@@ -56,8 +59,10 @@ class TaskPage extends StatelessWidget {
 
 class CreateTaskDialog extends StatefulWidget {
   final TaskViewModel taskViewModel;
+  final GroupViewModel groupViewModel;
 
-  const CreateTaskDialog({super.key, required this.taskViewModel});
+  const CreateTaskDialog(
+      {super.key, required this.taskViewModel, required this.groupViewModel});
 
   @override
   CreateTaskDialogState createState() => CreateTaskDialogState();
@@ -66,16 +71,15 @@ class CreateTaskDialog extends StatefulWidget {
 class CreateTaskDialogState extends State<CreateTaskDialog> {
   late final TextEditingController _taskDescEditingController;
   late final TextEditingController _taskNameEditingController;
-  late final TextEditingController _taskPointsController;
   final _formKey = GlobalKey<FormState>();
   int? _selectedPoints;
+  Group? _selectedGroup;
 
   @override
   void initState() {
     super.initState();
     _taskDescEditingController = TextEditingController();
     _taskNameEditingController = TextEditingController();
-    _taskPointsController = TextEditingController();
   }
 
   @override
@@ -84,7 +88,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
       key: _formKey,
       child: AlertDialog(
         title: const Text('Create a task'),
-        content: Column(children: [
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
           TextFormField(
             maxLength: 20,
             controller: _taskNameEditingController,
@@ -95,8 +99,30 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
               if (value == null || value.trim().isEmpty) {
                 return 'A name has to be set';
               }
-              if (widget.taskViewModel.isTaskExisting(value)) {
-                return 'A task with the same name already exists';
+              if (widget.taskViewModel.isTaskExisting(value, _selectedGroup)) {
+                return 'Task with same name already exists';
+              }
+              return null;
+            },
+          ),
+          DropdownButtonFormField<Group>(
+            value: _selectedGroup,
+            hint: const Text('Select a group for the task'),
+            items: widget.groupViewModel
+                .getGroups()
+                .map((group) => DropdownMenuItem(
+                      value: group,
+                      child: Text(group.getDesc()),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedGroup = value;
+              });
+            },
+            validator: (value) {
+              if (value == null) {
+                return 'A group must be selected';
               }
               return null;
             },
@@ -149,18 +175,19 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
                 return;
               }
               if (_taskNameEditingController.text.isNotEmpty &&
-                  _selectedPoints != null) {
+                  _selectedPoints != null &&
+                  _selectedGroup != null) {
                 final Task newTask = Task(
                   name: _taskNameEditingController.text,
                   points: _selectedPoints,
-                  creator: Member(),
+                  group: _selectedGroup!,
                   desc: _taskDescEditingController.text,
                 );
                 widget.taskViewModel.addTask(newTask);
                 _taskNameEditingController.clear();
                 _taskDescEditingController.clear();
-                _taskPointsController.clear();
                 _selectedPoints = null;
+                _selectedGroup = null;
                 Navigator.of(context).pop();
               }
             },
