@@ -23,13 +23,13 @@ class PlannedTask {
 class Task {
   late int _points;
   late String _name;
+  late Group _group;
   String? _desc;
-  late final Member _creator;
 
-  Task({required name, required creator, required points, desc}) {
+  Task({required name, required Group group, required points, desc}) {
     _desc = desc;
     _name = name;
-    _creator = creator;
+    _group = group;
     setPoints(points);
   }
 
@@ -77,9 +77,9 @@ class TaskViewModel extends ChangeNotifier {
       print('Error: $e');
     }
     // for test
-    _tasks.add(Task(name: "Cooking", creator: Member(), points: 4, desc: "Cooking pasta"));
-    _tasks.add(Task(name: "Laundry", creator: Member(), points: 5, desc: "Washing"));
-    _tasks.add(Task(name: "Planning", creator: Member(), points: 1, desc: "Planning dinner"));
+    _tasks.add(Task(name: "Cooking", group: Group(desc: "Group 1"), points: 4, desc: "Cooking pasta"));
+    _tasks.add(Task(name: "Laundry", group: Group(desc: "Group 1"), points: 5, desc: "Washing"));
+    _tasks.add(Task(name: "Planning", group: Group(desc: "Group 2"), points: 1, desc: "Planning dinner"));
 
     notifyListeners();
   }

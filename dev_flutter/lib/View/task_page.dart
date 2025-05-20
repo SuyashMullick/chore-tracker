@@ -84,7 +84,9 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
       key: _formKey,
       child: AlertDialog(
         title: const Text('Create a task'),
-        content: Column(children: [
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
           TextFormField(
             maxLength: 20,
             controller: _taskNameEditingController,
@@ -153,7 +155,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
                 final Task newTask = Task(
                   name: _taskNameEditingController.text,
                   points: _selectedPoints,
-                  creator: Member(),
+                  group: Group(desc: 'Group 1'),
                   desc: _taskDescEditingController.text,
                 );
                 widget.taskViewModel.addTask(newTask);

@@ -17,7 +17,7 @@ class CalendarViewModel extends ChangeNotifier {
       LinkedHashMap(equals: isSameDay, hashCode: getHashCode);
 
   CalendarViewModel() {
-    loadCalendar();
+    _loadCalendar();
   }
 
   void planTask(date, Task task, List<Member> assignees) {
@@ -43,23 +43,23 @@ class CalendarViewModel extends ChangeNotifier {
     return _tasks[day] ?? [];
   }
 
-  void loadCalendar() {
+  void _loadCalendar() {
     // here later the data would be requested from the server
     DateTime today =
         DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     planTask(today.add(const Duration(days: 1)),
-        Task(name: "Vacuum cleaning", points: 1, creator: Member()), [Member()]);
-    planTask(today, Task(name: "Cooking", points: 1, creator: Member()), [Member()]);
+        Task(name: "Vacuum cleaning", points: 1, group: Group(desc: "Group 1")), [Member(name: "user123")]);
+    planTask(today, Task(name: "Cooking", points: 1, group: Group(desc: "Group 1")), [Member(name: "user123")]);
     planTask(today.subtract(const Duration(days: 3)),
-        Task(name: "Feed the cat", points: 2, creator: Member()), [Member()]);
+        Task(name: "Feed the cat", points: 2, group: Group(desc: "Group 1")), [Member(name: "user123")]);
     planTask(
         today.subtract(const Duration(days: 3)),
          Task(
             name: "Send invitations for birthday",
             points: 10,
-            creator: Member()),  [Member()]);
+           group: Group(desc: "Group 2")),  [Member(name: "user123")]);
     planTask(today.subtract(const Duration(days: 3)),
-        Task(name: "Drive kids to school", points: 1, creator: Member()), [Member()]);
+        Task(name: "Drive kids to school", points: 1, group: Group(desc: "Group 1")), [Member(name: "user1")]);
 
     notifyListeners();
   }

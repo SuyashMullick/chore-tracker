@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weekview_calendar/weekview_calendar.dart';
 
-
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
 
@@ -19,8 +18,8 @@ class CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<CalendarViewModel, TaskViewModel>(
-      builder: (context, calendarViewModel, taskViewModel, _) {
+    return Consumer3<CalendarViewModel, TaskViewModel, GroupViewModel>(
+      builder: (context, calendarViewModel, taskViewModel, groupViewModel, _) {
         return Column(
           children: [
             WeekviewCalendar(
@@ -61,7 +60,8 @@ class CalendarPageState extends State<CalendarPage> {
                               return PlanTaskDialog(
                                   date: _focusedDay,
                                   calendarViewModel: calendarViewModel,
-                                  taskViewModel: taskViewModel);
+                                  taskViewModel: taskViewModel,
+                                  groupViewModel: groupViewModel);
                             },
                           );
                         },
@@ -84,13 +84,15 @@ class CalendarPageState extends State<CalendarPage> {
 class PlanTaskDialog extends StatefulWidget {
   final CalendarViewModel calendarViewModel;
   final TaskViewModel taskViewModel;
+  final GroupViewModel groupViewModel;
   final DateTime date;
 
   const PlanTaskDialog(
       {super.key,
       required this.date,
       required this.calendarViewModel,
-      required this.taskViewModel});
+      required this.taskViewModel,
+      required this.groupViewModel});
 
   @override
   CreateTaskDialogState createState() => CreateTaskDialogState();
@@ -100,6 +102,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
   late final TextEditingController _taskEditingController;
   final _formKey = GlobalKey<FormState>();
   Task? _selectedTask;
+  List<Member> _selectedMembers = [];
 
   @override
   void initState() {
@@ -114,6 +117,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
       child: AlertDialog(
         title: const Text("Plan a task"),
         content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(widget.date.toString()),
             DropdownButtonFormField<Task>(
@@ -137,7 +141,39 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                 }
                 return null;
               },
-            )
+            ),
+            DropdownButtonFormField(
+              onChanged:
+                  (x) {}, // This is required but not used in this custom implementation
+              items: widget.groupViewModel.getAllMembers().map((member) {
+                return DropdownMenuItem(
+                  value: member,
+                  child: StatefulBuilder(
+                    builder: (context, setStateCbx) {
+                      return Row(
+                        children: [
+                          // select/deselect members
+                          Checkbox(
+                            value: _selectedMembers.contains(member),
+                            onChanged: (isSelected) {
+                              if (isSelected == true) {
+                                _selectedMembers.add(member);
+                              } else {
+                                _selectedMembers.remove(member);
+                              }
+                              setStateCbx(() {});
+                              setState(() {});
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                          Text(member.getName()),
+                        ],
+                      );
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
           ],
         ),
         actionsAlignment: MainAxisAlignment.spaceBetween,
@@ -155,7 +191,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               }
               if (_selectedTask != null) {
                 widget.calendarViewModel
-                    .planTask(widget.date, _selectedTask!, [Member()]);
+                    .planTask(widget.date, _selectedTask!, _selectedMembers);
               }
               Navigator.of(context).pop();
             },
