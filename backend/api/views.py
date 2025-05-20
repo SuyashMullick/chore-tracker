@@ -1,3 +1,23 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from .models import User, Group, GroupUser, Task, TaskAssigned
+from .serializers import UserSerializer, GroupSerializer, GroupUserSerializer, TaskSerializer, TaskAssignedSerializer
 
-# Create your views here.
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
+class GroupUserViewSet(viewsets.ModelViewSet):
+    queryset = GroupUser.objects.all()
+    serializer_class = GroupUserSerializer
+
+class TaskViewSet(viewsets.ModelViewSet):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+class TaskAssignedViewSet(viewsets.ModelViewSet):
+    queryset = TaskAssigned.objects.all()
+    serializer_class = TaskAssignedSerializer
