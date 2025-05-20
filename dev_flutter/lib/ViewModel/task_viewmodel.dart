@@ -46,6 +46,10 @@ class Task {
     _points = points;
   }
 
+  Group getGroup() {
+    return _group;
+  }
+
   getPoints() {
     return _points;
   }
@@ -60,7 +64,7 @@ class Task {
 }
 
 class TaskViewModel extends ChangeNotifier {
-  List<Task> _tasks = [];
+  final List<Task> _tasks = [];
 
   TaskViewModel() {
     _loadTasks();
@@ -81,9 +85,12 @@ class TaskViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  isTaskExisting(String taskName) {
+  isTaskExisting(String taskName, Group? group) {
+    if (group == null) {
+      return false;
+    }
     for (Task task in _tasks) {
-      if (task.getName() == taskName) {
+      if (task.getName() == taskName && task.getGroup() == group) {
         return true;
       }
     }

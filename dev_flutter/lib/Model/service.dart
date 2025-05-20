@@ -68,9 +68,9 @@ class Service {
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
-        List<dynamic> tasks = json.decode(response.body);
-
-        print(tasks);
+        List<dynamic> tasksJson = json.decode(response.body);
+        
+      
       } else {
         throw Exception('Failed to load tasks');
       }

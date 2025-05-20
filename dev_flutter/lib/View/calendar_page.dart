@@ -115,7 +115,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(DateFormat('dd-MM-yyyy').format(widget.date)),
+            Text(DateFormat('dd.MM.yyyy').format(widget.date)),
             DropdownButtonFormField<Task>(
               value: _selectedTask,
               hint: const Text('Select a task'),
@@ -143,7 +143,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               selectedValuesStyle: const TextStyle(color: Colors.transparent),
               onChanged: (List<User> selected) {
                 setState(() {
-                  _selectedMembers =selected;
+                  _selectedMembers = selected;
                 });
               },
               options: widget.groupViewModel.getAllMembers(),
@@ -151,30 +151,30 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               whenEmpty: 'Select assignees',
             ),
             DropdownButtonFormField<int>(
-            value: _selectedPoints,
-            hint: const Text('Select the points for the task'),
-            items: List.generate(
-              10,
-              (i) {
-                int points = i + 1;
-                return DropdownMenuItem(
-                  value: points,
-                  child: Text(points.toString()),
-                );
+              value: _selectedPoints,
+              hint: const Text('Select the points for the task'),
+              items: List.generate(
+                10,
+                (i) {
+                  int points = i + 1;
+                  return DropdownMenuItem(
+                    value: points,
+                    child: Text(points.toString()),
+                  );
+                },
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _selectedPoints = value;
+                });
               },
-            ),
-            onChanged: (value) {
-              setState(() {
-                _selectedPoints = value;
-              });
-            },
-            validator: (value) {
-              if (value == null) {
-                return 'Points have to be selected';
-              }
-              return null;
-            },
-          )
+              validator: (value) {
+                if (value == null) {
+                  return 'Points have to be selected';
+                }
+                return null;
+              },
+            )
           ],
         ),
         actionsAlignment: MainAxisAlignment.spaceBetween,
@@ -187,13 +187,17 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
           ),
           TextButton(
             onPressed: () {
-              if (!_formKey.currentState!.validate()) {
+              if (!_formKey.currentState!.validate() ||
+                  _selectedMembers.isEmpty) {
                 return;
               }
               if (_selectedTask != null) {
                 widget.calendarViewModel
                     .planTask(widget.date, _selectedTask!, _selectedMembers);
               }
+              _selectedPoints = null;
+              _selectedMembers = [];
+              _selectedTask = null;
               Navigator.of(context).pop();
             },
             child: const Text('OK'),
