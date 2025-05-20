@@ -101,17 +101,10 @@ class PlanTaskDialog extends StatefulWidget {
 }
 
 class CreateTaskDialogState extends State<PlanTaskDialog> {
-  late final TextEditingController _pointsEditingController;
   final _formKey = GlobalKey<FormState>();
   Task? _selectedTask;
   List<User> _selectedMembers = [];
-  String _selectedMembersShow = "";
-
-  @override
-  void initState() {
-    super.initState();
-    _pointsEditingController = TextEditingController();
-  }
+  int? _selectedPoints;
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +115,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(DateFormat('yyyy-MM-dd').format(widget.date)),
+            Text(DateFormat('dd-MM-yyyy').format(widget.date)),
             DropdownButtonFormField<Task>(
               value: _selectedTask,
               hint: const Text('Select a task'),
@@ -136,6 +129,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               onChanged: (value) {
                 setState(() {
                   _selectedTask = value;
+                  _selectedPoints = _selectedTask?.getPoints();
                 });
               },
               validator: (value) {
@@ -146,7 +140,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               },
             ),
             DropDownMultiSelect<User>(
-              selectedValuesStyle: TextStyle(color: Colors.transparent),
+              selectedValuesStyle: const TextStyle(color: Colors.transparent),
               onChanged: (List<User> selected) {
                 setState(() {
                   _selectedMembers =selected;
@@ -154,8 +148,33 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               },
               options: widget.groupViewModel.getAllMembers(),
               selectedValues: _selectedMembers,
-              //whenEmpty: 'Select assignees',
+              whenEmpty: 'Select assignees',
             ),
+            DropdownButtonFormField<int>(
+            value: _selectedPoints,
+            hint: const Text('Select the points for the task'),
+            items: List.generate(
+              10,
+              (i) {
+                int points = i + 1;
+                return DropdownMenuItem(
+                  value: points,
+                  child: Text(points.toString()),
+                );
+              },
+            ),
+            onChanged: (value) {
+              setState(() {
+                _selectedPoints = value;
+              });
+            },
+            validator: (value) {
+              if (value == null) {
+                return 'Points have to be selected';
+              }
+              return null;
+            },
+          )
           ],
         ),
         actionsAlignment: MainAxisAlignment.spaceBetween,
