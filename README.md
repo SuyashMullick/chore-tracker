@@ -2,8 +2,10 @@
 
 ## To use Django:
 1. 'cd equalchores/backend'
-2. activate virtual environment by 'python -m venv venv' and '\venv\Scripts\activate'
-    source venv/bin/activate # Mac/Linux (use the full path of the \venv file)  
+2. activate virtual environment by 'python -m venv venv' and 
+‘Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+’，'.\\venv\Scripts\activate'      
+# source venv/bin/activate # Mac/Linux
 3. 'pip install -r requirements.txt'
 4. Run the Development Server
 'python manage.py runserver'
