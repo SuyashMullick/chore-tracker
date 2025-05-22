@@ -6,6 +6,10 @@ from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
     # there is a default id provided by Django
+    # banned the default group and user_permission from Django
+    groups = None
+    user_permissions = None
+
     class GenderChoices(models.TextChoices):
         MALE = "male", "Male"
         FEMALE = "female", "Female"
@@ -27,7 +31,7 @@ class User(AbstractUser):
 class Group(models.Model):
     group_name = models.CharField(max_length=100,unique=False)
     creator = models.ForeignKey(User, related_name='groups_created', on_delete=models.CASCADE)
-    users = models.ManyToManyField(User, through='GroupMembership', related_name='groups')
+    users = models.ManyToManyField(User, through='GroupMembership', related_name='group_users')
 
     def __str__(self):
         return self.group_name
