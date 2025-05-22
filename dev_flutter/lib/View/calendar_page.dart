@@ -2,9 +2,10 @@ import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:multiselect/multiselect.dart';
 import 'package:provider/provider.dart';
 import 'package:weekview_calendar/weekview_calendar.dart';
-
+import 'package:intl/intl.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -19,8 +20,8 @@ class CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<CalendarViewModel, TaskViewModel>(
-      builder: (context, calendarViewModel, taskViewModel, _) {
+    return Consumer3<CalendarViewModel, TaskViewModel, GroupViewModel>(
+      builder: (context, calendarViewModel, taskViewModel, groupViewModel, _) {
         return Column(
           children: [
             WeekviewCalendar(
@@ -61,7 +62,8 @@ class CalendarPageState extends State<CalendarPage> {
                               return PlanTaskDialog(
                                   date: _focusedDay,
                                   calendarViewModel: calendarViewModel,
-                                  taskViewModel: taskViewModel);
+                                  taskViewModel: taskViewModel,
+                                  groupViewModel: groupViewModel);
                             },
                           );
                         },
@@ -84,28 +86,25 @@ class CalendarPageState extends State<CalendarPage> {
 class PlanTaskDialog extends StatefulWidget {
   final CalendarViewModel calendarViewModel;
   final TaskViewModel taskViewModel;
+  final GroupViewModel groupViewModel;
   final DateTime date;
 
   const PlanTaskDialog(
       {super.key,
       required this.date,
       required this.calendarViewModel,
-      required this.taskViewModel});
+      required this.taskViewModel,
+      required this.groupViewModel});
 
   @override
   CreateTaskDialogState createState() => CreateTaskDialogState();
 }
 
 class CreateTaskDialogState extends State<PlanTaskDialog> {
-  late final TextEditingController _taskEditingController;
   final _formKey = GlobalKey<FormState>();
   Task? _selectedTask;
-
-  @override
-  void initState() {
-    super.initState();
-    _taskEditingController = TextEditingController();
-  }
+  List<User> _selectedMembers = [];
+  int? _selectedPoints;
 
   @override
   Widget build(BuildContext context) {
@@ -114,8 +113,9 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
       child: AlertDialog(
         title: const Text("Plan a task"),
         content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(widget.date.toString()),
+            Text(DateFormat('dd.MM.yyyy').format(widget.date)),
             DropdownButtonFormField<Task>(
               value: _selectedTask,
               hint: const Text('Select a task'),
@@ -129,11 +129,48 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               onChanged: (value) {
                 setState(() {
                   _selectedTask = value;
+                  _selectedPoints = _selectedTask?.getPoints();
                 });
               },
               validator: (value) {
                 if (value == null) {
                   return 'A task has to be chosen';
+                }
+                return null;
+              },
+            ),
+            DropDownMultiSelect<User>(
+              selectedValuesStyle: const TextStyle(color: Colors.transparent),
+              onChanged: (List<User> selected) {
+                setState(() {
+                  _selectedMembers = selected;
+                });
+              },
+              options: widget.groupViewModel.getAllMembers(),
+              selectedValues: _selectedMembers,
+              whenEmpty: 'Select assignees',
+            ),
+            DropdownButtonFormField<int>(
+              value: _selectedPoints,
+              hint: const Text('Select the points for the task'),
+              items: List.generate(
+                10,
+                (i) {
+                  int points = i + 1;
+                  return DropdownMenuItem(
+                    value: points,
+                    child: Text(points.toString()),
+                  );
+                },
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _selectedPoints = value;
+                });
+              },
+              validator: (value) {
+                if (value == null) {
+                  return 'Points have to be selected';
                 }
                 return null;
               },
@@ -150,13 +187,17 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
           ),
           TextButton(
             onPressed: () {
-              if (!_formKey.currentState!.validate()) {
+              if (!_formKey.currentState!.validate() ||
+                  _selectedMembers.isEmpty) {
                 return;
               }
               if (_selectedTask != null) {
                 widget.calendarViewModel
-                    .planTask(widget.date, _selectedTask!, [Member()]);
+                    .planTask(widget.date, _selectedTask!, _selectedMembers);
               }
+              _selectedPoints = null;
+              _selectedMembers = [];
+              _selectedTask = null;
               Navigator.of(context).pop();
             },
             child: const Text('OK'),

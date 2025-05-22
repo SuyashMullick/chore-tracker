@@ -4,6 +4,7 @@ import 'package:dev_flutter/View/profile_page.dart';
 import 'package:dev_flutter/View/statistics_page.dart';
 import 'package:dev_flutter/View/task_page.dart';
 import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
+import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -85,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
         providers: [
           ChangeNotifierProvider(create: (_) => CalendarViewModel()),
           ChangeNotifierProvider(create: (_) => TaskViewModel()),
+          ChangeNotifierProvider(create: (_) => GroupViewModel()),
         ],
         child: <Widget>[
           const CalendarPage(),
