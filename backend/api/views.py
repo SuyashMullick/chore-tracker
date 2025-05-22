@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from .models import User, Group, GroupUser, Task, TaskAssigned
+from .models import User, Group, GroupMembership, GroupMembership, TaskAssigned
 from .serializers import UserSerializer, GroupSerializer, GroupUserSerializer, TaskSerializer, TaskAssignedSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -11,11 +11,11 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
 
 class GroupUserViewSet(viewsets.ModelViewSet):
-    queryset = GroupUser.objects.all()
+    queryset = GroupMembership.objects.all()
     serializer_class = GroupUserSerializer
 
 class TaskViewSet(viewsets.ModelViewSet):
-    queryset = Task.objects.all()
+    queryset = GroupMembership.objects.all()
     serializer_class = TaskSerializer
 
 class TaskAssignedViewSet(viewsets.ModelViewSet):
