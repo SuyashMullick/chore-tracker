@@ -4,7 +4,7 @@
 1. 'cd equalchores/backend'
 2. activate virtual environment by 'python -m venv venv' and 
 ‘Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-’，'\venv\Scripts\activate'      
+’，'.\\venv\Scripts\activate'      
 # source venv/bin/activate # Mac/Linux
 3. 'pip install -r requirements.txt'
 4. Run the Development Server
