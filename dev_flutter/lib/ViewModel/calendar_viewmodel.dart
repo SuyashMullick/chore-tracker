@@ -59,7 +59,6 @@ class CalendarViewModel extends ChangeNotifier {
     // Group group1 = groups[0];
     // Group group2 = groups[1];
 
-    // here later the data would be requested from the server
     List<PlannedTask> plannedTasks = await Service.loadCalendarTasks();
     for (PlannedTask plannedTask in plannedTasks) {
       if (_tasks[plannedTask._startTime] == null) {
