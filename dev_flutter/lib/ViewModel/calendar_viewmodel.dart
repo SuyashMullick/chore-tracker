@@ -15,8 +15,31 @@ class CalendarViewModel extends ChangeNotifier {
   final LinkedHashMap<DateTime, List<PlannedTask>> _tasks =
       LinkedHashMap(equals: isSameDay, hashCode: getHashCode);
 
+  final Map<String, String> _taskStatuses = {};
+
   CalendarViewModel() {
     _loadCalendar();
+  }
+
+  String _taskKey(DateTime day, String taskName) {
+    final dayString = day.toIso8601String().substring(0, 10);
+    return '$dayString|$taskName';
+  }
+
+  String getTaskStatus(DateTime day, String taskName) {
+    return _taskStatuses[_taskKey(day, taskName)] ?? "open";
+  }
+
+  void updateTaskStatus(DateTime day, String taskName, String newStatus) {
+    _taskStatuses[_taskKey(day, taskName)] = newStatus;
+    notifyListeners();
+  }
+
+  List<PlannedTask> getUnfinishedTasksForDay(DateTime day) {
+    return getPlannedTasksForDay(day).where((task) {
+      final status = getTaskStatus(day, task.getName());
+      return status != "finished";
+    }).toList();
   }
 
   void planTask(date, Task task, List<User> assignees) {
@@ -58,7 +81,7 @@ class CalendarViewModel extends ChangeNotifier {
         Task(name: "Feed the cat", points: 2, group: group1), [User(name: "user123")]);
     planTask(
         today.subtract(const Duration(days: 3)),
-         Task(
+        Task(
             name: "Send invitations for birthday",
             points: 10,
            group: group2),  [User(name: "user123")]);

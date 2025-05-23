@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
@@ -17,6 +19,8 @@ class CalendarPage extends StatefulWidget {
 class CalendarPageState extends State<CalendarPage> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
+  // TODO: Change this
+  //CalendarFormat _calendarFormat = { "month", "twoWeeks", "week" } as CalendarFormat;
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +32,41 @@ class CalendarPageState extends State<CalendarPage> {
               firstDay: DateTime.utc(2010, 1, 1),
               lastDay: DateTime.utc(2030, 12, 31),
               focusedDay: _focusedDay,
+              //calendarFormat: _calendarFormat,
+              weekNumbersVisible: true,
+              // TODO: Change format of calendar to day, week or month, then change in headerstyle
               calendarFormat: CalendarFormat.week,
-              eventLoader: (day) {
-                return calendarViewModel.getPlannedTasksForDay(day);
+              startingDayOfWeek: StartingDayOfWeek.monday,
+              selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+              // Change the style of the header of the calendar
+              headerStyle: HeaderStyle(
+                // "month" -> "week" since we don't have a way to change calendar formats right now
+                formatButtonShowsNext: false,
+              ),
+              calendarStyle: CalendarStyle(
+                weekNumberTextStyle: const TextStyle(
+                    fontSize: 16, color: Color.fromARGB(255, 90, 90, 90)),
+                // Current day is highlighted with a circle
+                todayDecoration: BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),
+                // Selected day is highlighted with a circle
+                selectedDecoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.deepPurple, width: 2.0),
+                  color: Colors.transparent,
+                ),
+                selectedTextStyle: TextStyle(
+                  color: Colors.deepPurple,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              eventLoader: (day) =>
+                  calendarViewModel.getUnfinishedTasksForDay(day),
+              onFormatChanged: (calendarFormat) {
+                // TODO: Change here
+                //_calendarFormat = calendarFormat;
               },
               onDaySelected: (selectedDay, focusedDay) {
                 setState(() {
