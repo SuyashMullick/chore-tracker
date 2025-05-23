@@ -86,4 +86,28 @@ class Service {
       return [];
     }
   }
+
+  //  static Future<List<Task>> loadCalendarTasks() async {
+  //   const url = '$baseURL/plannedTasks/';
+  //   try {
+  //     final response = await http.get(Uri.parse(url));
+  //     List<PlannedTask> plannedTasks = [];
+
+  //     if (response.statusCode == 200) {
+  //       List<dynamic> tasksJson = json.decode(response.body);
+  //       for (var taskJson in tasksJson) {
+  //         TaskDTO taskDTO = TaskDTO.fromJson(taskJson);
+  //         Task task = Task.fromDTO(taskDTO);
+  //         plannedTasks.add(task);
+  //       }
+  //       return plannedTasks;
+      
+  //     } else {
+  //       throw Exception('Failed to load tasks');
+  //     }
+  //   } catch (e) {
+  //     print('Error: $e');
+  //     return [];
+  //   }
+  // }
 }
