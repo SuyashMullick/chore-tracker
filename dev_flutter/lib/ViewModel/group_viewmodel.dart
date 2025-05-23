@@ -10,7 +10,7 @@ class GroupViewModel extends ChangeNotifier {
 
   _loadGroups() {
     // for test
-    Group group1 = Group(desc: "Group 1");
+    Group group1 = Group(desc: "SweetHome", id: 1);
     User user1 = User(name: "User 1");
     User user2 = User(name: "User 2");
     User user3 = User(name: "User 3");
@@ -20,12 +20,12 @@ class GroupViewModel extends ChangeNotifier {
     group1.addMember(user2);
     _groups.add(group1);
 
-    Group group2 = Group(desc: "Group 2");
+    Group group2 = Group(desc: "Group 2", id: 2);
     group2.addMember(user3);
     group2.addMember(user2);
     _groups.add(group2);
 
-    Group group3 = Group(desc: "Group 3");
+    Group group3 = Group(desc: "Group 3", id: 3);
     group3.addMember(user4);
     group3.addMember(user5);
     _groups.add(group3);
@@ -68,16 +68,19 @@ class User {
 }
 
 class Group {
+  late final _id;
   late final _desc;
   final List<User> _members = [];
 
-  Group({required desc}) {
+  Group({required desc, required id}) {
     _desc = desc;
+    _id = id;
   }
 
   factory Group.fromDTO(GroupDTO group) {
     return Group(
       desc: group.name,
+      id: group.id,
     );
   }
 
