@@ -1,3 +1,4 @@
+import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -7,7 +8,7 @@ class TaskDTO {
   final int id;
   final int points;
   final String name;
-  final int groupId;
+  final GroupDTO group;
   final String note;
 
   TaskDTO({
@@ -15,7 +16,7 @@ class TaskDTO {
     required this.points,
     required this.name,
     required this.note,
-    required this.groupId,
+    required this.group,
   });
 
   factory TaskDTO.fromJson(Map<String, dynamic> json) {
@@ -24,7 +25,7 @@ class TaskDTO {
       points: json['points'],
       name: json['name'],
       note: json['note'],
-      groupId: json['groupId'],
+      group: GroupDTO.fromJson(json['group']),
     );
   }
   Map<String, dynamic> toJson() {
@@ -33,7 +34,7 @@ class TaskDTO {
       'points': points,
       'name': name,
       'note': note,
-      'groupId': groupId,
+      'group': group.toJson(),
     };
   }
 }
@@ -62,20 +63,27 @@ class GroupDTO {
 }
 
 class Service {
-  static Future<void> loadTasks() async {
+  static Future<List<Task>> loadTasks() async {
     const url = '$baseURL/tasks/';
     try {
       final response = await http.get(Uri.parse(url));
+      List<Task> tasks = [];
 
       if (response.statusCode == 200) {
         List<dynamic> tasksJson = json.decode(response.body);
-        
+        for (var taskJson in tasksJson) {
+          TaskDTO taskDTO = TaskDTO.fromJson(taskJson);
+          Task task = Task.fromDTO(taskDTO);
+          tasks.add(task);
+        }
+        return tasks;
       
       } else {
         throw Exception('Failed to load tasks');
       }
     } catch (e) {
       print('Error: $e');
+      return [];
     }
   }
 }

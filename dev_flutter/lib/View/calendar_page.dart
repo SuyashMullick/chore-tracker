@@ -121,10 +121,12 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               hint: const Text('Select a task'),
               items: widget.taskViewModel
                   .getAllTasks()
-                  .map((task) => DropdownMenuItem(
-                        value: task,
-                        child: Text(task.getName()),
-                      ))
+                  .map(
+                    (task) => DropdownMenuItem(
+                      value: task,
+                      child: Text(task.getName()),
+                    ),
+                  )
                   .toList(),
               onChanged: (value) {
                 setState(() {
