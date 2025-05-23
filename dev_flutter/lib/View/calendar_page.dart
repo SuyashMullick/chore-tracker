@@ -35,7 +35,7 @@ class CalendarPageState extends State<CalendarPage> {
               //calendarFormat: _calendarFormat,
               weekNumbersVisible: true,
               // TODO: Change format of calendar to day, week or month, then change in headerstyle
-              calendarFormat: CalendarFormat.week, 
+              calendarFormat: CalendarFormat.week,
               startingDayOfWeek: StartingDayOfWeek.monday,
               selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
               // Change the style of the header of the calendar
@@ -44,7 +44,8 @@ class CalendarPageState extends State<CalendarPage> {
                 formatButtonShowsNext: false,
               ),
               calendarStyle: CalendarStyle(
-                weekNumberTextStyle: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 90, 90, 90)),
+                weekNumberTextStyle: const TextStyle(
+                    fontSize: 16, color: Color.fromARGB(255, 90, 90, 90)),
                 // Current day is highlighted with a circle
                 todayDecoration: BoxDecoration(
                   color: Colors.blue,
@@ -78,8 +79,12 @@ class CalendarPageState extends State<CalendarPage> {
               },
             ),
             Expanded(
-              child: Builder(
-                builder: (context) {
+              child: ListView.builder(
+                itemCount: calendarViewModel
+                        .getPlannedTasksForDay(_selectedDay)
+                        .length +
+                    1,
+                itemBuilder: (context, index) {
                   final tasksForDay =
                       calendarViewModel.getPlannedTasksForDay(_selectedDay);
                   if (index == tasksForDay.length) {
