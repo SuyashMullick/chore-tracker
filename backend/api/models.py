@@ -75,7 +75,7 @@ class GroupMembership(models.Model):
         return f"{self.user.username} in {self.group.group_name}"
 
 
-class TaskCreated(models.Model):   
+class CreatedTask(models.Model):   
     group = models.ForeignKey(Group, related_name="tasks_created", on_delete=models.CASCADE)
     task_name = models.CharField(max_length=100)
     description = models.TextField()
@@ -91,11 +91,11 @@ class TaskCreated(models.Model):
     def __str__(self):
         return self.task_name
 
-class TaskAssigned(models.Model):
-    task_template = models.ForeignKey(TaskCreated, on_delete=models.CASCADE, related_name="assigned_tasks")
+class PlannedTask(models.Model):
+    task_template = models.ForeignKey(CreatedTask, on_delete=models.CASCADE, related_name="tasks_planned_group")
     start_time = models.DateTimeField(default=timezone.now)
-    assignee = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_assigned")
-    assigner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_delivered')
+    assignee = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_planned_person")
+    assigner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_delivered_person')
     custom_description = models.TextField(blank=True)
     custom_points = models.IntegerField(
         blank=True, null=True,
@@ -128,4 +128,4 @@ class TaskAssigned(models.Model):
     def formatted_start_time(self):
         return self.start_time.strftime('%Y-%m-%d %H:%M')
     def __str__(self):
-        return f"Assigned: {self.task_template.task_name} to {self.assignee} in Group '{self.task_template.group}'"
+        return f"Planned: {self.task_template.task_name} to {self.assignee} in Group '{self.task_template.group}'"
