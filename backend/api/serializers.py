@@ -11,7 +11,7 @@ class GroupSerializer(ModelSerializer):
         model = Group
         fields = '__all__'
 
-class GroupUserSerializer(ModelSerializer):
+class GroupMembershipSerializer(ModelSerializer):
     class Meta:
         model = GroupMembership
         fields = '__all__'
