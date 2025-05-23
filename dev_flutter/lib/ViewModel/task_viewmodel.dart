@@ -3,30 +3,16 @@ import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:flutter/material.dart';
 
 
-class PlannedTask {
-  late final _task;
-  late final List<User> _assignees;
-
-  PlannedTask({required assignees, required task}) {
-    _task = task;
-    _assignees = assignees;
-  }
-
-  getName() {
-    return _task.getName();
-  }
-}
-
 class Task {
   late int _points;
   late String _name;
   late Group _group;
   String? _desc;
 
-  factory Task.fromDTO(TaskDTO task, GroupDTO group) {
+  factory Task.fromDTO(TaskDTO task) {
     return Task(
       name: task.name,
-      group: Group(desc: group.name),
+      group: Group.fromDTO(task.group),
       points: task.points,
       desc: task.note
     );
@@ -72,15 +58,16 @@ class TaskViewModel extends ChangeNotifier {
 
   Future<void> _loadTasks() async {
     // call service here later
+    _tasks.addAll(await Service.loadTasks());
 
     // for test
-    GroupViewModel groupViewModel = GroupViewModel();
-    List<Group> groups = groupViewModel.getGroups();
-    Group group1 = groups[0];
-    Group group2 = groups[1];
-    _tasks.add(Task(name: "Cooking", group: group1, points: 4, desc: "Cooking pasta"));
-    _tasks.add(Task(name: "Laundry", group: group2, points: 5, desc: "Washing"));
-    _tasks.add(Task(name: "Planning", group: group2, points: 1, desc: "Planning dinner"));
+    // GroupViewModel groupViewModel = GroupViewModel();
+    // List<Group> groups = groupViewModel.getGroups();
+    // Group group1 = groups[0];
+    // Group group2 = groups[1];
+    // _tasks.add(Task(name: "Cooking", group: group1, points: 4, desc: "Cooking pasta"));
+    // _tasks.add(Task(name: "Laundry", group: group2, points: 5, desc: "Washing"));
+    // _tasks.add(Task(name: "Planning", group: group2, points: 1, desc: "Planning dinner"));
 
     notifyListeners();
   }

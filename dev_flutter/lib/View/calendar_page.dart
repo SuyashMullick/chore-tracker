@@ -256,10 +256,12 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               hint: const Text('Select a task'),
               items: widget.taskViewModel
                   .getAllTasks()
-                  .map((task) => DropdownMenuItem(
-                        value: task,
-                        child: Text(task.getName()),
-                      ))
+                  .map(
+                    (task) => DropdownMenuItem(
+                      value: task,
+                      child: Text(task.getName()),
+                    ),
+                  )
                   .toList(),
               onChanged: (value) {
                 setState(() {
@@ -328,7 +330,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               }
               if (_selectedTask != null) {
                 widget.calendarViewModel
-                    .planTask(widget.date, _selectedTask!, _selectedMembers);
+                    .planTask(widget.date, _selectedTask!, _selectedMembers, _selectedPoints);
               }
               _selectedPoints = null;
               _selectedMembers = [];
