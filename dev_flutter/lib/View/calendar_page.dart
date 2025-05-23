@@ -133,9 +133,9 @@ class CalendarPageState extends State<CalendarPage> {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade400),
                             borderRadius: BorderRadius.circular(10),
-                            color: status == "open"
+                            color: status == PlannedTaskStatus.open
                                 ? Colors.white
-                                : status == "done"
+                                : status == PlannedTaskStatus.done
                                     ? const Color.fromARGB(255, 220, 220, 220)
                                     : Colors.green.shade100,
                           ),
@@ -149,9 +149,9 @@ class CalendarPageState extends State<CalendarPage> {
                                   child: Text(
                                     taskName,
                                     style: TextStyle(
-                                      color: status == "open"
+                                      color: status == PlannedTaskStatus.open
                                           ? Colors.blue
-                                          : status == "done"
+                                          : status == PlannedTaskStatus.done
                                               ? Colors.grey
                                               : Colors.green,
                                     ),
