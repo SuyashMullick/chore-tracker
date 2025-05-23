@@ -65,6 +65,7 @@ class CalendarViewModel extends ChangeNotifier {
     return _tasks[day] ?? [];
   }
 
+
   void _loadCalendar() {
     GroupViewModel groupViewModel = GroupViewModel();
     List<Group> groups = groupViewModel.getGroups();
