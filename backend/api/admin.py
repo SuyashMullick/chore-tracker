@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
-from .models import User, Group, GroupMembership, TaskCreated, TaskAssigned
+from .models import User, Group, GroupMembership, CreatedTask, PlannedTask
 
 
 # Custom User admin
@@ -46,15 +46,15 @@ class GroupMembershipAdmin(admin.ModelAdmin):
     search_fields = ('user__email', 'group__group_name')
 
 
-@admin.register(TaskCreated)
-class TaskCreatedAdmin(admin.ModelAdmin):
+@admin.register(CreatedTask)
+class CreatedTaskAdmin(admin.ModelAdmin):
     list_display = ('id', 'task_name', 'group', 'points', 'description')
     search_fields = ('task_name',)
     list_filter = ('group', 'points')
 
 
-@admin.register(TaskAssigned)
-class TaskAssignedAdmin(admin.ModelAdmin):
+@admin.register(PlannedTask)
+class PlannedTaskAdmin(admin.ModelAdmin):
     list_display = ('id', 'task_template', 'assignee', 'assigner', 'start_time', 'state', 'custom_description')
     search_fields = ('task_template__task_name', 'assignee__email', 'assigner__email')
     list_filter = ('state', 'start_time', 'assignee', 'assigner')

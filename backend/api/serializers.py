@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import User, Group, GroupMembership, TaskCreated, TaskAssigned
+from .models import User, Group, GroupMembership, CreatedTask, PlannedTask
 
 class UserSerializer(ModelSerializer):
     class Meta:
@@ -11,17 +11,17 @@ class GroupSerializer(ModelSerializer):
         model = Group
         fields = '__all__'
 
-class GroupUserSerializer(ModelSerializer):
+class GroupMembershipSerializer(ModelSerializer):
     class Meta:
         model = GroupMembership
         fields = '__all__'
 
-class TaskSerializer(ModelSerializer):
+class CreatedTaskSerializer(ModelSerializer):
     class Meta:
-        model = TaskCreated
+        model = CreatedTask
         fields = '__all__'
 
-class TaskAssignedSerializer(ModelSerializer):
+class PlannedTaskSerializer(ModelSerializer):
     class Meta:
-        model = TaskAssigned
+        model = PlannedTask
         fields = '__all__'
