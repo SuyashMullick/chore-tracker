@@ -120,6 +120,7 @@ class CalendarPageState extends State<CalendarPage> {
                           margin:
                               EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           padding: EdgeInsets.all(2),
+                          height: 50.0,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade400),
                             borderRadius: BorderRadius.circular(10),
