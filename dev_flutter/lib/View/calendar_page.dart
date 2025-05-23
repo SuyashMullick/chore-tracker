@@ -19,8 +19,7 @@ class CalendarPage extends StatefulWidget {
 class CalendarPageState extends State<CalendarPage> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
-  // TODO: Change this
-  //CalendarFormat _calendarFormat = { "month", "twoWeeks", "week" } as CalendarFormat;
+  CalendarFormat _calendarFormat = CalendarFormat.week;
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +32,11 @@ class CalendarPageState extends State<CalendarPage> {
               lastDay: DateTime.utc(2030, 12, 31),
               focusedDay: _focusedDay,
               weekNumbersVisible: true,
-              // TODO: Change format of calendar to day, week or month, then change in headerstyle
-              calendarFormat: CalendarFormat.week,
+              calendarFormat: _calendarFormat,
               startingDayOfWeek: StartingDayOfWeek.monday,
               selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
               // Change the style of the header of the calendar
               headerStyle: HeaderStyle(
-                // "month" -> "week" since we don't have a way to change calendar formats right now
                 formatButtonShowsNext: false,
               ),
               calendarStyle: CalendarStyle(
@@ -64,8 +61,23 @@ class CalendarPageState extends State<CalendarPage> {
               eventLoader: (day) =>
                   calendarViewModel.getUnfinishedTasksForDay(day),
               onFormatChanged: (calendarFormat) {
-                // TODO: Change here
-                //_calendarFormat = calendarFormat;
+                switch (calendarFormat) {
+                  case CalendarFormat.month:
+                    setState(() {
+                      _calendarFormat = CalendarFormat.month;
+                    });
+                    break;
+                  case CalendarFormat.twoWeeks:
+                    setState(() {
+                      _calendarFormat = CalendarFormat.twoWeeks;
+                    });
+                    break;
+                  case CalendarFormat.week:
+                    setState(() {
+                      _calendarFormat = CalendarFormat.week;
+                    });
+                    break;
+                }
               },
               onDaySelected: (selectedDay, focusedDay) {
                 setState(() {
