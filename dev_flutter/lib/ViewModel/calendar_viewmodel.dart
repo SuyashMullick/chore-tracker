@@ -13,31 +13,20 @@ class CalendarViewModel extends ChangeNotifier {
   final LinkedHashMap<DateTime, List<PlannedTask>> _tasks =
       LinkedHashMap(equals: isSameDay, hashCode: getHashCode);
 
-  final Map<String, String> _taskStatuses = {};
-
   CalendarViewModel() {
     _loadCalendar();
   }
 
-  String _taskKey(DateTime day, String taskName) {
-    final dayString = day.toIso8601String().substring(0, 10);
-    return '$dayString|$taskName';
-  }
-
-  String getTaskStatus(DateTime day, String taskName) {
-    return _taskStatuses[_taskKey(day, taskName)] ?? "open";
-  }
-
-  void updateTaskStatus(DateTime day, String taskName, String newStatus) {
-    _taskStatuses[_taskKey(day, taskName)] = newStatus;
-    notifyListeners();
-  }
-
   List<PlannedTask> getUnfinishedTasksForDay(DateTime day) {
     return getPlannedTasksForDay(day).where((task) {
-      final status = getTaskStatus(day, task.getName());
-      return status != "finished";
+      return task._status != PlannedTaskStatus.finished;
     }).toList();
+  }
+
+  void updateStatusOfTask(PlannedTask plannedTask, PlannedTaskStatus status) {
+    plannedTask.setStatus(status);
+
+    notifyListeners();
   }
 
   void planTask(date, Task task, List<User> assignees, points) {
@@ -108,7 +97,7 @@ class CalendarViewModel extends ChangeNotifier {
   }
 }
 
-enum PlannedTaskState {
+enum PlannedTaskStatus {
   open,
   done,
   finished,
@@ -117,7 +106,7 @@ enum PlannedTaskState {
 class PlannedTask {
   late final _task;
   late final List<User> _assignees;
-  PlannedTaskState _state = PlannedTaskState.open;
+  PlannedTaskStatus _status = PlannedTaskStatus.open;
   int? _points;
   late final DateTime _startTime;
 
@@ -127,7 +116,7 @@ class PlannedTask {
       task: Task.fromDTO(plannedtaskDTO.task),
       points: plannedtaskDTO.points,
       startTime: plannedtaskDTO.startTime,
-      state: plannedtaskDTO.state,
+      status: plannedtaskDTO.status,
     );
   }
 
@@ -136,14 +125,22 @@ class PlannedTask {
       required task,
       required points,
       required startTime,
-      state}) {
+      status}) {
     _task = task;
     _assignees = assignees;
     _points = points;
     _startTime = startTime;
-    if (state != null) {
-      _state = state;
+    if (status != null) {
+      _status = status;
     }
+  }
+
+  getStatus() {
+    return _status;
+  }
+
+  setStatus(PlannedTaskStatus status) {
+    _status = status;
   }
 
   getName() {

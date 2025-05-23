@@ -1,7 +1,8 @@
 import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 const baseURL = 'http://127.0.0.1:8000/api';
 
@@ -10,7 +11,7 @@ class PlannedTaskDTO {
   final int points;
   final TaskDTO task;
   final List<UserDTO> assignees;
-  final PlannedTaskState state;
+  final PlannedTaskStatus status;
   final DateTime startTime;
 
   PlannedTaskDTO({
@@ -18,7 +19,7 @@ class PlannedTaskDTO {
     required this.task,
     required this.points,
     required this.assignees,
-    required this.state,
+    required this.status,
     required this.startTime,
   });
 
@@ -27,8 +28,10 @@ class PlannedTaskDTO {
       id: json['id'],
       task: TaskDTO.fromJson(json['task_template']),
       points: json['custom_points'],
-      assignees: [UserDTO(id: json['assignee_id'], name: "User 1")], // hard coded for now, until backend ready
-      state: json['state'],
+      assignees: [
+        UserDTO(id: json['assignee_id'], name: "User 1")
+      ], // hard coded for now, until backend ready
+      status: json['state'],
       startTime: json['start_time'],
     );
   }
@@ -38,7 +41,7 @@ class PlannedTaskDTO {
       'points': points,
       'task_template': task,
       'assignees': jsonEncode(assignees.map((u) => u.toJson()).toList()),
-      'state': state,
+      'state': status,
       'start_time': startTime,
     };
   }
@@ -88,7 +91,12 @@ class TaskDTO {
       points: json['points'],
       name: json['task_name'],
       note: json['description'],
-      group: GroupDTO(creatorId: 1, name: "Test group", id: json['group']), // hard coded, temporary
+      group: GroupDTO( // hard coded, temporary
+          creatorId: 1,
+          name: "SweetHome",
+          id: json['group'],
+          users: [UserDTO(id: 1, name: 'User1')]),
+      //json['members']), 
       //GroupDTO.fromJson(json['group']),
     );
   }
@@ -107,11 +115,13 @@ class GroupDTO {
   final int id;
   final String name;
   final int creatorId;
+  final List<UserDTO> users;
 
   GroupDTO({
     required this.id,
     required this.name,
     required this.creatorId,
+    required this.users,
   });
 
   factory GroupDTO.fromJson(Map<String, dynamic> json) {
@@ -119,6 +129,7 @@ class GroupDTO {
       id: json['id'],
       name: json['group_name'],
       creatorId: json['creator_id'],
+      users: json['members'].map((json) => UserDTO.fromJson(json)).toList(),
     );
   }
   Map<String, dynamic> toJson() {
@@ -126,6 +137,7 @@ class GroupDTO {
       'id': id,
       'group_name': name,
       'creator_id': creatorId,
+      'members': users,
     };
   }
 }
@@ -145,7 +157,6 @@ class Service {
           tasks.add(task);
         }
         return tasks;
-      
       } else {
         throw Exception('Failed to load tasks');
       }
@@ -155,7 +166,7 @@ class Service {
     }
   }
 
-   static Future<List<PlannedTask>> loadCalendarTasks() async {
+  static Future<List<PlannedTask>> loadCalendarTasks() async {
     const url = '$baseURL/plannedTasks/';
     try {
       final response = await http.get(Uri.parse(url));
@@ -169,7 +180,6 @@ class Service {
           plannedTasks.add(task);
         }
         return plannedTasks;
-      
       } else {
         throw Exception('Failed to load tasks');
       }
@@ -177,26 +187,21 @@ class Service {
       print('Error: $e');
       return [];
     }
-    return [];
   }
 
   static void createTask(Task task) async {
     // make task to TaskDTO, then use toJson, then send put request
 
-  //   final response = await http.post(
-  //   url,
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: json.encode(task.toJson()),  // Convert to JSON string
-  // );
-
+    //   final response = await http.post(
+    //   url,
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: json.encode(task.toJson()),  // Convert to JSON string
+    // );
   }
 
-  static void createPlannedTask(PlannedTask plannedTask) async {
-
-
-  }
+  static void createPlannedTask(PlannedTask plannedTask) async {}
 
   static void updatePlannedTaskState(PlannedTask plannedTask) async {
     // mark as done, finished

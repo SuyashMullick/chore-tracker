@@ -94,10 +94,8 @@ class CalendarPageState extends State<CalendarPage> {
                 builder: (context) {
                   final tasksForDay = calendarViewModel
                       .getPlannedTasksForDay(_selectedDay)
-                      .where((task) =>
-                          calendarViewModel.getTaskStatus(
-                              _selectedDay, task.getName()) !=
-                          "finished")
+                      .where((task) => task.getStatus() !=
+                          PlannedTaskStatus.finished)
                       .toList();
 
                   return ListView.builder(
@@ -125,8 +123,7 @@ class CalendarPageState extends State<CalendarPage> {
                         }
                         final task = tasksForDay[index];
                         final taskName = task.getName();
-                        final status = calendarViewModel.getTaskStatus(
-                            _selectedDay, taskName);
+                        final status = task.getStatus();
 
                         return Container(
                           margin:
@@ -169,7 +166,7 @@ class CalendarPageState extends State<CalendarPage> {
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
+                                    child: DropdownButton<PlannedTaskStatus>(
                                       value: status,
                                       dropdownColor: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
@@ -179,25 +176,22 @@ class CalendarPageState extends State<CalendarPage> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                       items: {
-                                        "open",
-                                        "done",
-                                        if (status == "done" ||
-                                            status == "finished")
-                                          "finished",
-                                      }.map((String value) {
-                                        return DropdownMenuItem<String>(
+                                        PlannedTaskStatus.open,
+                                        PlannedTaskStatus.done,
+                                        if (status == PlannedTaskStatus.done ||
+                                            status ==
+                                                PlannedTaskStatus.finished)
+                                          PlannedTaskStatus.finished,
+                                      }.map((PlannedTaskStatus value) {
+                                        return DropdownMenuItem<
+                                            PlannedTaskStatus>(
                                           value: value,
-                                          child: Text(value[0].toUpperCase() +
-                                              value.substring(1)),
+                                          child: Text(value.name),
                                         );
                                       }).toList(),
                                       onChanged: (newValue) {
                                         if (newValue != null) {
-                                          calendarViewModel.updateTaskStatus(
-                                            _selectedDay,
-                                            taskName,
-                                            newValue,
-                                          );
+                                          calendarViewModel.updateStatusOfTask(task, newValue);
                                         }
                                       },
                                     ),
@@ -329,8 +323,8 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                 return;
               }
               if (_selectedTask != null) {
-                widget.calendarViewModel
-                    .planTask(widget.date, _selectedTask!, _selectedMembers, _selectedPoints);
+                widget.calendarViewModel.planTask(widget.date, _selectedTask!,
+                    _selectedMembers, _selectedPoints);
               }
               _selectedPoints = null;
               _selectedMembers = [];
