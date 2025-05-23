@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:weekview_calendar/weekview_calendar.dart';
 
-const baseURL = 'http://127.0.0.1:8000/api';
 
 int getHashCode(DateTime date) {
   return DateTime(date.year, date.month, date.day).hashCode;
@@ -19,7 +18,7 @@ class CalendarViewModel extends ChangeNotifier {
   final Map<String, String> _taskStatuses = {};
 
   CalendarViewModel() {
-    loadCalendar();
+    _loadCalendar();
   }
 
   String _taskKey(DateTime day, String taskName) {
@@ -43,7 +42,7 @@ class CalendarViewModel extends ChangeNotifier {
     }).toList();
   }
 
-  void planTask(date, Task task, List<Member> assignees) {
+  void planTask(date, Task task, List<User> assignees) {
     if (_tasks[date] == null) {
       _tasks[date] = [];
     }
@@ -66,29 +65,28 @@ class CalendarViewModel extends ChangeNotifier {
     return _tasks[day] ?? [];
   }
 
-  void loadCalendar() {
+  void _loadCalendar() {
+    GroupViewModel groupViewModel = GroupViewModel();
+    List<Group> groups = groupViewModel.getGroups();
+    Group group1 = groups[0];
+    Group group2 = groups[1];
+    
     // here later the data would be requested from the server
     DateTime today =
         DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    planTask(
-        today.add(const Duration(days: 1)),
-        Task(name: "Vacuum cleaning", points: 1, creator: Member()),
-        [Member()]);
-    planTask(
-        today, Task(name: "Cooking", points: 1, creator: Member()), [Member()]);
+    planTask(today.add(const Duration(days: 1)),
+        Task(name: "Vacuum cleaning", points: 1, group: group1), [User(name: "user123")]);
+    planTask(today, Task(name: "Cooking", points: 1, group: group1), [User(name: "user123")]);
     planTask(today.subtract(const Duration(days: 3)),
-        Task(name: "Feed the cat", points: 2, creator: Member()), [Member()]);
+        Task(name: "Feed the cat", points: 2, group: group1), [User(name: "user123")]);
     planTask(
         today.subtract(const Duration(days: 3)),
         Task(
             name: "Send invitations for birthday",
             points: 10,
-            creator: Member()),
-        [Member()]);
-    planTask(
-        today.subtract(const Duration(days: 3)),
-        Task(name: "Drive kids to school", points: 1, creator: Member()),
-        [Member()]);
+           group: group2),  [User(name: "user123")]);
+    planTask(today.subtract(const Duration(days: 3)),
+        Task(name: "Drive kids to school", points: 1, group: group1), [User(name: "user1")]);
 
     notifyListeners();
   }

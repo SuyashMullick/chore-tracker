@@ -4,8 +4,10 @@ import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:multiselect/multiselect.dart';
 import 'package:provider/provider.dart';
 import 'package:weekview_calendar/weekview_calendar.dart';
+import 'package:intl/intl.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -22,8 +24,8 @@ class CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<CalendarViewModel, TaskViewModel>(
-      builder: (context, calendarViewModel, taskViewModel, _) {
+    return Consumer3<CalendarViewModel, TaskViewModel, GroupViewModel>(
+      builder: (context, calendarViewModel, taskViewModel, groupViewModel, _) {
         return Column(
           children: [
             WeekviewCalendar(
@@ -79,117 +81,29 @@ class CalendarPageState extends State<CalendarPage> {
               child: Builder(
                 builder: (context) {
                   final tasksForDay =
-                      calendarViewModel.getUnfinishedTasksForDay(_selectedDay);
-
-                  return ListView.builder(
-                    itemCount: tasksForDay.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == tasksForDay.length) {
-                        return Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: TextButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return PlanTaskDialog(
-                                    date: _focusedDay,
-                                    calendarViewModel: calendarViewModel,
-                                    taskViewModel: taskViewModel,
-                                  );
-                                },
-                              );
+                      calendarViewModel.getPlannedTasksForDay(_selectedDay);
+                  if (index == tasksForDay.length) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return PlanTaskDialog(
+                                  date: _focusedDay,
+                                  calendarViewModel: calendarViewModel,
+                                  taskViewModel: taskViewModel,
+                                  groupViewModel: groupViewModel);
                             },
-                            child: const Text("Plan new task"),
-                          ),
-                        );
-                      } else {
-                        final task = tasksForDay[index];
-                        final taskName = task.getName();
-                        final status = calendarViewModel.getTaskStatus(
-                            _selectedDay, taskName);
-
-                        return Container(
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          padding: EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade400),
-                            borderRadius: BorderRadius.circular(10),
-                            color: status == "open"
-                                ? Colors.white
-                                : status == "done"
-                                    ? const Color.fromARGB(255, 220, 220, 220)
-                                    : Colors.green.shade100,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    taskName,
-                                    style: TextStyle(
-                                      color: status == "open"
-                                          ? Colors.blue
-                                          : status == "done"
-                                              ? Colors.grey
-                                              : Colors.green,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.grey.shade400),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: status,
-                                      dropdownColor: Colors.white,
-                                      borderRadius: BorderRadius.circular(6),
-                                      iconEnabledColor: Colors.black,
-                                      style: const TextStyle(
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      items: {
-                                        "open",
-                                        "done",
-                                        if (status == "done" ||
-                                            status == "finished")
-                                          "finished",
-                                      }.map((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value[0].toUpperCase() +
-                                              value.substring(1)),
-                                        );
-                                      }).toList(),
-                                      onChanged: (newValue) {
-                                        if (newValue != null) {
-                                          calendarViewModel.updateTaskStatus(
-                                            _selectedDay,
-                                            taskName,
-                                            newValue,
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                  );
+                          );
+                        },
+                        child: const Text("Plan new task"),
+                      ),
+                    );
+                  } else {
+                    return ListTile(title: Text(tasksForDay[index].getName()));
+                  }
                 },
               ),
             ),
@@ -203,28 +117,25 @@ class CalendarPageState extends State<CalendarPage> {
 class PlanTaskDialog extends StatefulWidget {
   final CalendarViewModel calendarViewModel;
   final TaskViewModel taskViewModel;
+  final GroupViewModel groupViewModel;
   final DateTime date;
 
   const PlanTaskDialog(
       {super.key,
       required this.date,
       required this.calendarViewModel,
-      required this.taskViewModel});
+      required this.taskViewModel,
+      required this.groupViewModel});
 
   @override
   CreateTaskDialogState createState() => CreateTaskDialogState();
 }
 
 class CreateTaskDialogState extends State<PlanTaskDialog> {
-  late final TextEditingController _taskEditingController;
   final _formKey = GlobalKey<FormState>();
   Task? _selectedTask;
-
-  @override
-  void initState() {
-    super.initState();
-    _taskEditingController = TextEditingController();
-  }
+  List<User> _selectedMembers = [];
+  int? _selectedPoints;
 
   @override
   Widget build(BuildContext context) {
@@ -233,8 +144,9 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
       child: AlertDialog(
         title: const Text("Plan a task"),
         content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(widget.date.toString()),
+            Text(DateFormat('dd.MM.yyyy').format(widget.date)),
             DropdownButtonFormField<Task>(
               value: _selectedTask,
               hint: const Text('Select a task'),
@@ -248,11 +160,48 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               onChanged: (value) {
                 setState(() {
                   _selectedTask = value;
+                  _selectedPoints = _selectedTask?.getPoints();
                 });
               },
               validator: (value) {
                 if (value == null) {
                   return 'A task has to be chosen';
+                }
+                return null;
+              },
+            ),
+            DropDownMultiSelect<User>(
+              selectedValuesStyle: const TextStyle(color: Colors.transparent),
+              onChanged: (List<User> selected) {
+                setState(() {
+                  _selectedMembers = selected;
+                });
+              },
+              options: widget.groupViewModel.getAllMembers(),
+              selectedValues: _selectedMembers,
+              whenEmpty: 'Select assignees',
+            ),
+            DropdownButtonFormField<int>(
+              value: _selectedPoints,
+              hint: const Text('Select the points for the task'),
+              items: List.generate(
+                10,
+                (i) {
+                  int points = i + 1;
+                  return DropdownMenuItem(
+                    value: points,
+                    child: Text(points.toString()),
+                  );
+                },
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _selectedPoints = value;
+                });
+              },
+              validator: (value) {
+                if (value == null) {
+                  return 'Points have to be selected';
                 }
                 return null;
               },
@@ -269,13 +218,17 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
           ),
           TextButton(
             onPressed: () {
-              if (!_formKey.currentState!.validate()) {
+              if (!_formKey.currentState!.validate() ||
+                  _selectedMembers.isEmpty) {
                 return;
               }
               if (_selectedTask != null) {
                 widget.calendarViewModel
-                    .planTask(widget.date, _selectedTask!, [Member()]);
+                    .planTask(widget.date, _selectedTask!, _selectedMembers);
               }
+              _selectedPoints = null;
+              _selectedMembers = [];
+              _selectedTask = null;
               Navigator.of(context).pop();
             },
             child: const Text('OK'),
