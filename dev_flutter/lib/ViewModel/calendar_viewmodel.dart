@@ -16,8 +16,31 @@ class CalendarViewModel extends ChangeNotifier {
   final LinkedHashMap<DateTime, List<PlannedTask>> _tasks =
       LinkedHashMap(equals: isSameDay, hashCode: getHashCode);
 
+  final Map<String, String> _taskStatuses = {};
+
   CalendarViewModel() {
     loadCalendar();
+  }
+
+  String _taskKey(DateTime day, String taskName) {
+    final dayString = day.toIso8601String().substring(0, 10);
+    return '$dayString|$taskName';
+  }
+
+  String getTaskStatus(DateTime day, String taskName) {
+    return _taskStatuses[_taskKey(day, taskName)] ?? "open";
+  }
+
+  void updateTaskStatus(DateTime day, String taskName, String newStatus) {
+    _taskStatuses[_taskKey(day, taskName)] = newStatus;
+    notifyListeners();
+  }
+
+  List<PlannedTask> getUnfinishedTasksForDay(DateTime day) {
+    return getPlannedTasksForDay(day).where((task) {
+      final status = getTaskStatus(day, task.getName());
+      return status != "finished";
+    }).toList();
   }
 
   void planTask(date, Task task, List<Member> assignees) {
@@ -47,19 +70,25 @@ class CalendarViewModel extends ChangeNotifier {
     // here later the data would be requested from the server
     DateTime today =
         DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    planTask(today.add(const Duration(days: 1)),
-        Task(name: "Vacuum cleaning", points: 1, creator: Member()), [Member()]);
-    planTask(today, Task(name: "Cooking", points: 1, creator: Member()), [Member()]);
+    planTask(
+        today.add(const Duration(days: 1)),
+        Task(name: "Vacuum cleaning", points: 1, creator: Member()),
+        [Member()]);
+    planTask(
+        today, Task(name: "Cooking", points: 1, creator: Member()), [Member()]);
     planTask(today.subtract(const Duration(days: 3)),
         Task(name: "Feed the cat", points: 2, creator: Member()), [Member()]);
     planTask(
         today.subtract(const Duration(days: 3)),
-         Task(
+        Task(
             name: "Send invitations for birthday",
             points: 10,
-            creator: Member()),  [Member()]);
-    planTask(today.subtract(const Duration(days: 3)),
-        Task(name: "Drive kids to school", points: 1, creator: Member()), [Member()]);
+            creator: Member()),
+        [Member()]);
+    planTask(
+        today.subtract(const Duration(days: 3)),
+        Task(name: "Drive kids to school", points: 1, creator: Member()),
+        [Member()]);
 
     notifyListeners();
   }
