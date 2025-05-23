@@ -3,20 +3,6 @@ import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:flutter/material.dart';
 
 
-class PlannedTask {
-  late final _task;
-  late final List<User> _assignees;
-
-  PlannedTask({required assignees, required task}) {
-    _task = task;
-    _assignees = assignees;
-  }
-
-  getName() {
-    return _task.getName();
-  }
-}
-
 class Task {
   late int _points;
   late String _name;
