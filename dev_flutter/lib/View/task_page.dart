@@ -20,7 +20,7 @@ class TaskPage extends StatelessWidget {
                 child: ListTile(
                   leading: const Icon(Icons.task),
                   title: Text(task.getName()),
-                  subtitle: Text(task.getGroup().getDesc()),
+                  subtitle: Text(task.getGroup().getName()),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () => taskViewModel.removeTask(task),
@@ -29,27 +29,33 @@ class TaskPage extends StatelessWidget {
               ),
             );
           }
-          return Stack(
-            children: [
-              Column(children: widgets),
-              Positioned(
-                bottom: 16,
-                right: 16,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return CreateTaskDialog(
-                            taskViewModel: taskViewModel,
-                            groupViewModel: groupViewModel);
-                      },
-                    );
-                  },
-                  child: const Icon(Icons.add),
+          return SizedBox.expand(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: widgets,
+                  ),
                 ),
-              ),
-            ],
+                Positioned(
+                  bottom: 16,
+                  right: 16,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return CreateTaskDialog(
+                              taskViewModel: taskViewModel,
+                              groupViewModel: groupViewModel);
+                        },
+                      );
+                    },
+                    child: const Icon(Icons.add),
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -83,6 +89,13 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
   }
 
   @override
+  void dispose() {
+    _taskDescEditingController.dispose();
+    _taskNameEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
@@ -112,7 +125,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
                 .getGroups()
                 .map((group) => DropdownMenuItem(
                       value: group,
-                      child: Text(group.getDesc()),
+                      child: Text(group.getName()),
                     ))
                 .toList(),
             onChanged: (value) {

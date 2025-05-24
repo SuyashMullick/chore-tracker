@@ -57,17 +57,7 @@ class TaskViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadTasks() async {
-    // call service here later
     _tasks.addAll(await Service.loadTasks());
-
-    // for test
-    // GroupViewModel groupViewModel = GroupViewModel();
-    // List<Group> groups = groupViewModel.getGroups();
-    // Group group1 = groups[0];
-    // Group group2 = groups[1];
-    // _tasks.add(Task(name: "Cooking", group: group1, points: 4, desc: "Cooking pasta"));
-    // _tasks.add(Task(name: "Laundry", group: group2, points: 5, desc: "Washing"));
-    // _tasks.add(Task(name: "Planning", group: group2, points: 1, desc: "Planning dinner"));
 
     notifyListeners();
   }
@@ -86,16 +76,16 @@ class TaskViewModel extends ChangeNotifier {
 
   addTask(Task task) {
     _tasks.add(task);
-    // task has to be added to db?
+    // task has to be added to db
     notifyListeners();
   }
 
-  removeTask(Task task) {
+  bool removeTask(Task task) {
     bool success = false;
     if (_tasks.contains(task)) {
       success = _tasks.remove(task);
     }
-    // task has to be deleted on db?
+    // task has to be deleted on db
     notifyListeners();
     return success;
   }

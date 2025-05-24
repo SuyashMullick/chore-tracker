@@ -8,7 +8,6 @@ import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:weekview_calendar/weekview_calendar.dart';
 
 void main() {
   runApp(const MyApp());
