@@ -89,6 +89,13 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
   }
 
   @override
+  void dispose() {
+    _taskDescEditingController.dispose();
+    _taskNameEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,

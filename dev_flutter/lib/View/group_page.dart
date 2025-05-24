@@ -26,10 +26,39 @@ class GroupPageState extends State<GroupPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: group.getName(),
-                        border: const OutlineInputBorder(),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(Icons.group),
+                        title: Text(group.getName()),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return GroupDialog(
+                                      groupViewModel: groupViewModel,
+                                      selectedGroup: group,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                groupViewModel.removeGroup(group);
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     Column(
@@ -68,8 +97,7 @@ class GroupPageState extends State<GroupPage> {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        return CreateGroupDialog(
-                            groupViewModel: groupViewModel);
+                        return GroupDialog(groupViewModel: groupViewModel);
                       },
                     );
                   },
@@ -84,24 +112,37 @@ class GroupPageState extends State<GroupPage> {
   }
 }
 
-class CreateGroupDialog extends StatefulWidget {
+class GroupDialog extends StatefulWidget {
   final GroupViewModel groupViewModel;
+  final Group? selectedGroup;
 
-  const CreateGroupDialog({super.key, required this.groupViewModel});
+  const GroupDialog(
+      {super.key, required this.groupViewModel, this.selectedGroup});
 
   @override
-  CreateGroupDialogState createState() => CreateGroupDialogState();
+  GroupDialogState createState() => GroupDialogState();
 }
 
-class CreateGroupDialogState extends State<CreateGroupDialog> {
-  late final TextEditingController _groupDescEditingController;
+class GroupDialogState extends State<GroupDialog> {
+  late final TextEditingController _groupNameEditingController;
   final _formKey = GlobalKey<FormState>();
   List<User> _selectedMembers = [];
 
   @override
   void initState() {
     super.initState();
-    _groupDescEditingController = TextEditingController();
+    _groupNameEditingController = TextEditingController(
+        text: widget.selectedGroup != null
+            ? widget.selectedGroup!.getName()
+            : "");
+    _selectedMembers =
+        widget.selectedGroup != null ? widget.selectedGroup!.getMembers() : [];
+  }
+
+  @override
+  void dispose() {
+    _groupNameEditingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -109,11 +150,13 @@ class CreateGroupDialogState extends State<CreateGroupDialog> {
     return Form(
       key: _formKey,
       child: AlertDialog(
-        title: const Text('Create a group'),
+        title: widget.selectedGroup != null
+            ? const Text('Edit group')
+            : const Text('Create a group'),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           TextFormField(
             maxLength: 20,
-            controller: _groupDescEditingController,
+            controller: _groupNameEditingController,
             decoration: const InputDecoration(
               labelText: 'Name of the group',
             ),
@@ -131,7 +174,7 @@ class CreateGroupDialogState extends State<CreateGroupDialog> {
                 _selectedMembers = selected;
               });
             },
-            options: widget.groupViewModel.getAllMembers(),
+            options: widget.groupViewModel.getUsers(),
             selectedValues: _selectedMembers,
             whenEmpty: 'Select members',
           ),
@@ -149,14 +192,18 @@ class CreateGroupDialogState extends State<CreateGroupDialog> {
               if (!_formKey.currentState!.validate()) {
                 return;
               }
-              if (_groupDescEditingController.text.isNotEmpty) {
-                final Group newGroup =
-                    Group(name: _groupDescEditingController.text, id: 0);
-                widget.groupViewModel.addMembers(newGroup, _selectedMembers);
-
-                widget.groupViewModel.addGroup(newGroup);
-                _groupDescEditingController.clear();
-                _selectedMembers.clear();
+              if (_groupNameEditingController.text.isNotEmpty) {
+                if (widget.selectedGroup == null) {
+                  final Group newGroup =
+                      Group(name: _groupNameEditingController.text, id: 0);
+                  widget.groupViewModel.addGroup(newGroup);
+                  widget.groupViewModel.addMembers(newGroup, _selectedMembers);
+                } else {
+                  widget.selectedGroup!.setName(_groupNameEditingController.text);
+                  widget.groupViewModel.refreshView();
+                }
+                _groupNameEditingController.clear();
+                _selectedMembers = [];
                 Navigator.of(context).pop();
               }
             },

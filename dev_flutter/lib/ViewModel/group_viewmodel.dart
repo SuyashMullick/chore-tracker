@@ -3,31 +3,42 @@ import 'package:flutter/material.dart';
 
 class GroupViewModel extends ChangeNotifier {
   final List<Group> _groups = [];
+  final List<User> _users = [];
 
   GroupViewModel() {
     _loadGroups();
   }
 
+  _loadUsers() {
+    User user1 = User(name: "User 1");
+    _users.add(user1);
+    User user2 = User(name: "User 2");
+    _users.add(user2);
+    User user3 = User(name: "User 3");
+    _users.add(user3);
+    User user4 = User(name: "User 4");
+    _users.add(user4);
+    User user5 = User(name: "User 5");
+    _users.add(user5);
+  }
+
   _loadGroups() {
     // for test
+    _loadUsers();
     Group group1 = Group(name: "SweetHome", id: 1);
-    User user1 = User(name: "User 1");
-    User user2 = User(name: "User 2");
-    User user3 = User(name: "User 3");
-    User user4 = User(name: "User 4");
-    User user5 = User(name: "User 5");
-    group1._addMember(user1);
-    group1._addMember(user2);
+
+    group1._addMember(_users[0]);
+    group1._addMember(_users[1]);
     _groups.add(group1);
 
     Group group2 = Group(name: "Group 2", id: 2);
-    group2._addMember(user3);
-    group2._addMember(user2);
+    group2._addMember(_users[2]);
+    group2._addMember(_users[1]);
     _groups.add(group2);
 
     Group group3 = Group(name: "Group 3", id: 3);
-    group3._addMember(user4);
-    group3._addMember(user5);
+    group3._addMember(_users[4]);
+    group3._addMember(_users[3]);
     _groups.add(group3);
 
     notifyListeners();
@@ -43,6 +54,10 @@ class GroupViewModel extends ChangeNotifier {
 
       notifyListeners();
     }
+  }
+
+  refreshView() {
+    notifyListeners();
   }
 
   bool removeMember(Group group, User user) {
@@ -70,16 +85,15 @@ class GroupViewModel extends ChangeNotifier {
     return result;
   }
 
-  List<User> getAllMembers() {
-    List<User> members = [];
-    for (Group group in _groups) {
-      for (User member in group.getMembers()) {
-        if (!members.contains(member)) {
-          members.add(member);
-        }
-      }
+  List<User> getGroupMembers(Group group) {
+    if (_groups.contains(group)) {
+      return group.getMembers();
     }
-    return members;
+    return [];
+  }
+
+  List<User> getUsers() {
+    return _users;
   }
 }
 
@@ -102,7 +116,7 @@ class User {
 
 class Group {
   late final _id;
-  late final _name;
+  late String _name;
   final List<User> _members = [];
 
   Group({required name, required id}) {
@@ -126,6 +140,12 @@ class Group {
   _addMember(User user) {
     if (!_members.contains(user)) {
       _members.add(user);
+    }
+  }
+
+  setName(String name) {
+    if (name.isNotEmpty) {
+      _name = name;
     }
   }
 

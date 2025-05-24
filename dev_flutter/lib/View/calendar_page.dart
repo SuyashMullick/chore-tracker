@@ -94,8 +94,8 @@ class CalendarPageState extends State<CalendarPage> {
                 builder: (context) {
                   final tasksForDay = calendarViewModel
                       .getPlannedTasksForDay(_selectedDay)
-                      .where((task) => task.getStatus() !=
-                          PlannedTaskStatus.finished)
+                      .where((task) =>
+                          task.getStatus() != PlannedTaskStatus.finished)
                       .toList();
 
                   return ListView.builder(
@@ -191,7 +191,8 @@ class CalendarPageState extends State<CalendarPage> {
                                       }).toList(),
                                       onChanged: (newValue) {
                                         if (newValue != null) {
-                                          calendarViewModel.updateStatusOfTask(task, newValue);
+                                          calendarViewModel.updateStatusOfTask(
+                                              task, newValue);
                                         }
                                       },
                                     ),
@@ -259,6 +260,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                   .toList(),
               onChanged: (value) {
                 setState(() {
+                  _selectedMembers = [];
                   _selectedTask = value;
                   _selectedPoints = _selectedTask?.getPoints();
                 });
@@ -277,7 +279,10 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                   _selectedMembers = selected;
                 });
               },
-              options: widget.groupViewModel.getAllMembers(),
+              options: _selectedTask != null
+                  ? widget.groupViewModel
+                      .getGroupMembers(_selectedTask!.getGroup())
+                  : [],
               selectedValues: _selectedMembers,
               whenEmpty: 'Select assignees',
             ),
