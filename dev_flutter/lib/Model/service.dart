@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 
 const baseURL = 'http://127.0.0.1:8000/api';
 
+enum PlannedTaskStatus { open, done, finished }
+
 class PlannedTaskDTO {
   final int id;
   final int points;
@@ -29,9 +31,12 @@ class PlannedTaskDTO {
       task: TaskDTO.fromJson(json['task_template']),
       points: json['custom_points'],
       assignees: [
-        UserDTO(id: json['assignee_id'], name: "User 1")
+        UserDTO(id: json['assignee_id'], name: "User 1"),
       ], // hard coded for now, until backend ready
-      status: json['state'],
+      status: PlannedTaskStatus.values.firstWhere(
+        (e) => e.toString() == 'PlannedTaskStatus.${json['state']}',
+        orElse: () => PlannedTaskStatus.open,
+      ),
       startTime: json['start_time'],
     );
   }
@@ -41,7 +46,7 @@ class PlannedTaskDTO {
       'points': points,
       'task_template': task,
       'assignees': jsonEncode(assignees.map((u) => u.toJson()).toList()),
-      'state': status,
+      'state': status.toString().split('.').last,
       'start_time': startTime,
     };
   }
@@ -51,22 +56,13 @@ class UserDTO {
   final int id;
   final String name;
 
-  UserDTO({
-    required this.id,
-    required this.name,
-  });
+  UserDTO({required this.id, required this.name});
 
   factory UserDTO.fromJson(Map<String, dynamic> json) {
-    return UserDTO(
-      id: json['id'],
-      name: json['name'],
-    );
+    return UserDTO(id: json['id'], name: json['name']);
   }
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }
 
@@ -91,12 +87,14 @@ class TaskDTO {
       points: json['points'],
       name: json['task_name'],
       note: json['description'],
-      group: GroupDTO( // hard coded, temporary
-          creatorId: 1,
-          name: "SweetHome",
-          id: json['group'],
-          users: [UserDTO(id: 1, name: 'User1')]),
-      //json['members']), 
+      group: GroupDTO(
+        // hard coded, temporary
+        creatorId: 1,
+        name: "SweetHome",
+        id: json['group'],
+        users: [UserDTO(id: 1, name: 'User1')],
+      ),
+      //json['members']),
       //GroupDTO.fromJson(json['group']),
     );
   }
@@ -189,21 +187,91 @@ class Service {
     }
   }
 
-  static void createTask(Task task) async {
-    // make task to TaskDTO, then use toJson, then send put request
+  static Future<bool> createTask(Task task) async {
+    const url = '$baseURL/tasks/';
+    try {
+      // Convert domain Task to TaskDTO and then to JSON
+      final TaskDTO taskDTO = Task.toDTO(task);
+      final Map<String, dynamic> taskJson = taskDTO.toJson();
 
-    //   final response = await http.post(
-    //   url,
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: json.encode(task.toJson()),  // Convert to JSON string
-    // );
+      // POST request
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(taskJson),
+      );
+
+      // Check response status
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        print('Failed to create task. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error creating task: $e');
+      return false;
+    }
   }
 
-  static void createPlannedTask(PlannedTask plannedTask) async {}
+  static Future<bool> createPlannedTask(PlannedTask plannedTask) async {
+    const url = '$baseURL/plannedTasks/';
 
-  static void updatePlannedTaskState(PlannedTask plannedTask) async {
-    // mark as done, finished
+    try {
+      // Convert domain PlannedTask to PlannedTaskDTO and then to JSON
+      final PlannedTaskDTO plannedTaskDTO = PlannedTask.toDTO(plannedTask);
+      final Map<String, dynamic> plannedTaskJson = plannedTaskDTO.toJson();
+
+      // POST request
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(plannedTaskJson),
+      );
+
+      // Check response status
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        print('Failed to create planned task. Status: ${response.statusCode}');
+        print('Response: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error creating planned task: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> updatePlannedTaskState(
+    PlannedTask plannedTask,
+    PlannedTaskStatus newStatus,
+  ) async {
+    final url = '$baseURL/plannedTasks/${plannedTask.id}/';
+
+    try {
+      // Create update payload
+      final updateData = {'state': newStatus.toString().split('.').last};
+
+      // PATCH request
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(updateData),
+      );
+
+      // Check response status
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print('Failed to update task state. Status: ${response.statusCode}');
+        print('Response: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error updating task state: $e');
+      return false;
+    }
   }
 }
