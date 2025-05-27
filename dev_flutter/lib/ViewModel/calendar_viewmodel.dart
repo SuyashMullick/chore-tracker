@@ -119,6 +119,30 @@ class PlannedTask {
     );
   }
 
+  static PlannedTaskDTO toDTO(PlannedTask plannedTask) {
+    return PlannedTaskDTO(
+      id: plannedTask.id,
+      task: TaskDTO(
+        id: plannedTask.taskId,
+        name: plannedTask.taskName,
+        points: plannedTask.points,
+        note: plannedTask.note,
+        group: GroupDTO(
+          id: plannedTask.groupId,
+          name: plannedTask.groupName,
+          creatorId: plannedTask.creatorId,
+          users: [],
+        ),
+      ),
+      points: plannedTask.points,
+      assignees: plannedTask.assignees
+          .map((user) => UserDTO(id: user.id, name: user.name))
+          .toList(),
+      status: plannedTask.status,
+      startTime: plannedTask.startTime,
+    );
+  }
+
   PlannedTask(
       {required assignees,
       required task,
