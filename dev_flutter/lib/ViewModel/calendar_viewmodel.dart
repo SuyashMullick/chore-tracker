@@ -59,13 +59,14 @@ class CalendarViewModel extends ChangeNotifier {
     // Group group1 = groups[0];
     // Group group2 = groups[1];
 
-    List<PlannedTask> plannedTasks = await Service.loadCalendarTasks();
-    for (PlannedTask plannedTask in plannedTasks) {
-      if (_tasks[plannedTask._startTime] == null) {
-        _tasks[plannedTask._startTime] = [];
-      }
-      _tasks[plannedTask._startTime]?.add(plannedTask);
-    }
+    // uncomment when done in backend
+    // List<PlannedTask> plannedTasks = await Service.loadCalendarTasks();
+    // for (PlannedTask plannedTask in plannedTasks) {
+    //   if (_tasks[plannedTask._startTime] == null) {
+    //     _tasks[plannedTask._startTime] = [];
+    //   }
+    //   _tasks[plannedTask._startTime]?.add(plannedTask);
+    // }
 
     // DateTime today =
     //     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);

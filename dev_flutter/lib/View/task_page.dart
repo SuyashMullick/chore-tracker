@@ -143,7 +143,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
             },
           ),
           TextField(
-            maxLength: 30,
+            maxLength: 100,
             controller: _taskDescEditingController,
             decoration: const InputDecoration(
               labelText: 'Description of the task (optional)',

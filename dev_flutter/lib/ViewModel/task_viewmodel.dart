@@ -47,6 +47,10 @@ class Task {
     setPoints(points);
   }
 
+  void setId(int id) {
+    _id = id;
+  }
+
   void setPoints(int points) {
     if (points < 1 || points > 10) {
       throw ArgumentError("The points have to be between 1 and 10.");
