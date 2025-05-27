@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 122, 84, 186)),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color.fromARGB(255, 250, 191, 96),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 66, 164, 234),
       ),
       home: const SafeArea(
         child:  MyHomePage(title: 'EqualChores Home Page'),
@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
             currentPageIndex = index;
           });
         },
-        indicatorColor: const Color.fromARGB(255, 66, 234, 105),
+        indicatorColor: const Color.fromARGB(255, 66, 164, 234),
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(

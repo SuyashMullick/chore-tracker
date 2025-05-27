@@ -45,7 +45,7 @@ class CalendarPageState extends State<CalendarPage> {
                       fontSize: 16, color: Color.fromARGB(255, 90, 90, 90)),
                   // Current day is highlighted with a circle
                   todayDecoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 66, 234, 105),
+                    color: const Color.fromARGB(255, 66, 164, 234),
                     shape: BoxShape.circle,
                   ),
                   // Selected day is highlighted with a circle
