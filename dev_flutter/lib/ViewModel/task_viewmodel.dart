@@ -29,12 +29,7 @@ class Task {
       name: task._name,
       note: task._desc,
       creatorId: task._creatorId,
-      group: GroupDTO(
-        id: task._group.getId(),
-        name: task._group.getName(),
-        creatorId: task._creatorId,
-        users: task._group.getMembers().map((user) => UserDTO(id: user.getId(), name: user.getName())).toList(),
-      ),
+      group: Group.toDTO(task._group),
     );
   }
 

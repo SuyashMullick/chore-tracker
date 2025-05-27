@@ -139,6 +139,7 @@ class User {
 
 class Group {
   late final int _id;
+  late final int _creatorId;
   late String _name;
   final List<User> _members = [];
 
@@ -151,6 +152,15 @@ class Group {
     return Group(
       name: group.name,
       id: group.id,
+    );
+  }
+
+  static GroupDTO toDTO(Group group) {
+    return GroupDTO(
+      id: group._id,
+      name: group._name,
+      creatorId: group._creatorId,
+      users: group._members.map((member) => User.toDTO(member)).toList(),
     );
   }
 
