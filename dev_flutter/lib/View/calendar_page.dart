@@ -268,6 +268,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
   Task? _selectedTask;
   List<User> _selectedMembers = [];
   int? _selectedPoints;
+  bool okPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -305,44 +306,59 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                 return null;
               },
             ),
-            Text(
-              _selectedMembers.isEmpty
-                  ? 'Select assignees'
-                  : _selectedMembers.map((user) => user.getName()).join(' , '),
-            ),
-            DropdownButtonFormField(
-              onChanged: (x) {},
-              items: _selectedTask != null
-                  ? widget.groupViewModel
-                      .getGroupMembers(_selectedTask!.getGroup())
-                      .map((member) {
-                      return DropdownMenuItem(
-                        value: member,
-                        child: StatefulBuilder(
-                          builder: (context, setCbxState) {
-                            return Row(
-                              children: [
-                                Checkbox(
-                                  value: _selectedMembers.contains(member),
-                                  onChanged: (isSelected) {
-                                    if (isSelected == true) {
-                                      _selectedMembers.add(member);
-                                    } else {
-                                      _selectedMembers.remove(member);
-                                    }
-                                    setCbxState(() {});
-                                    setState(() {});
-                                  },
-                                ),
-                                const SizedBox(width: 10),
-                                Text(member.getName()),
-                              ],
-                            );
-                          },
-                        ),
-                      );
-                    }).toList()
-                  : [],
+            Stack(
+              children: [
+                DropdownButtonFormField(
+                  onChanged: (x) {},
+                  items: _selectedTask != null
+                      ? widget.groupViewModel
+                          .getGroupMembers(_selectedTask!.getGroup())
+                          .map((member) {
+                          return DropdownMenuItem(
+                            value: member,
+                            child: StatefulBuilder(
+                              builder: (context, setCbxState) {
+                                return Row(
+                                  children: [
+                                    Checkbox(
+                                      value: _selectedMembers.contains(member),
+                                      onChanged: (isSelected) {
+                                        if (isSelected == true) {
+                                          _selectedMembers.add(member);
+                                        } else {
+                                          _selectedMembers.remove(member);
+                                        }
+                                        setCbxState(() {});
+                                        setState(() {});
+                                      },
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(member.getName()),
+                                  ],
+                                );
+                              },
+                            ),
+                          );
+                        }).toList()
+                      : [],
+                ),
+                Positioned(
+                  top: 14,
+                  child: Text(
+                    style: TextStyle(
+                      fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize,
+                      color: okPressed && _selectedMembers.isEmpty
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).textTheme.bodyMedium!.color,
+                    ),
+                    _selectedMembers.isEmpty
+                        ? 'Select assignees'
+                        : _selectedMembers
+                            .map((user) => user.getName())
+                            .join(' , '),
+                  ),
+                ),
+              ],
             ),
             DropdownButtonFormField<int>(
               value: _selectedPoints,
@@ -381,6 +397,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
           ),
           TextButton(
             onPressed: () {
+              setState(() => okPressed = true);
               if (!_formKey.currentState!.validate() ||
                   _selectedMembers.isEmpty) {
                 return;
@@ -389,6 +406,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                 widget.calendarViewModel.planTask(widget.date, _selectedTask!,
                     _selectedMembers, _selectedPoints);
               }
+              okPressed = false;
               _selectedPoints = null;
               _selectedMembers = [];
               _selectedTask = null;
