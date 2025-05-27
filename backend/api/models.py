@@ -96,7 +96,6 @@ class PlannedTask(models.Model):
     start_time = models.DateTimeField(default=timezone.now)
     assignee = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_planned_person")
     assigner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_delivered_person')
-    custom_description = models.TextField(blank=True)
     custom_points = models.IntegerField(
         blank=True, null=True,
         validators=[MinValueValidator(1), MaxValueValidator(10)]
@@ -122,7 +121,7 @@ class PlannedTask(models.Model):
     def get_task_name(self):
         return self.task_template.task_name
     def get_description(self):
-        return self.custom_description if self.custom_description else self.task_template.description
+        return self.task_template.description
     def get_points(self):
         return self.custom_points if self.custom_points is not None else self.task_template.points
     def formatted_start_time(self):
