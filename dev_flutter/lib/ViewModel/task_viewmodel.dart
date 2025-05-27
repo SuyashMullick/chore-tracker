@@ -18,6 +18,21 @@ class Task {
     );
   }
 
+  static TaskDTO toDTO(Task task) {
+    return TaskDTO(
+      id: task.id,
+      points: task.points,
+      name: task.name,
+      note: task.description,
+      group: GroupDTO(
+        id: task.groupId,
+        name: task.groupName,
+        creatorId: task.creatorId,
+        users: task.members.map((user) => UserDTO(id: user.id, name: user.name)).toList(),
+      ),
+    );
+  }
+
   Task({required name, required Group group, required points, desc}) {
     _desc = desc;
     _name = name;
