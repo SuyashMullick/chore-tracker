@@ -96,10 +96,13 @@ class TaskViewModel extends ChangeNotifier {
     return false;
   }
 
-  addTask(Task task) {
+  Future<bool> addTask(Task task) async {
     _tasks.add(task);
-    // task has to be added to db
+    // add task to db
+    bool success = await Service.createTask(task);
     notifyListeners();
+
+    return success;
   }
 
   bool removeTask(Task task) {

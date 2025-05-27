@@ -103,8 +103,8 @@ enum PlannedTaskStatus {
 }
 
 class PlannedTask {
-  late final _task;
-  late final _id;
+  late final Task _task;
+  late final int _id;
   late final List<User> _assignees;
   PlannedTaskStatus _status = PlannedTaskStatus.open;
   late int _points;
@@ -123,7 +123,7 @@ class PlannedTask {
   static PlannedTaskDTO toDTO(PlannedTask plannedTask) {
     return PlannedTaskDTO(
       id: plannedTask._id,
-      task: plannedTask._task.toDTO(),
+      task: Task.toDTO(plannedTask._task),
       points: plannedTask._points,
       assignees:
           plannedTask._assignees.map((user) => User.toDTO(user)).toList(),
