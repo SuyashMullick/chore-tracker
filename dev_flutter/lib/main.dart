@@ -135,7 +135,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(
         children: [
-          //AnimatedBackground(),
           backgrounds[currentPageIndex],
 
           // Adds transition effect when switching pages
