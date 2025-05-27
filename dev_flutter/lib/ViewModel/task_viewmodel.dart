@@ -38,7 +38,7 @@ class Task {
     );
   }
 
-  Task({required name, required Group group, required points, required id, desc, creatorId}) {
+  Task({required String name, required Group group, required points, required id, desc, creatorId}) {
     _desc = desc;
     _id = id;
     _name = name;
@@ -58,15 +58,15 @@ class Task {
     return _group;
   }
 
-  getPoints() {
+  int getPoints() {
     return _points;
   }
   
-  getDesc() {
+  String? getDesc() {
     return _desc;
   }
 
-  getName() {
+  String getName() {
     return _name;
   }
 }
@@ -84,7 +84,7 @@ class TaskViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  isTaskExisting(String taskName, Group? group) {
+  bool isTaskExisting(String taskName, Group? group) {
     if (group == null) {
       return false;
     }
