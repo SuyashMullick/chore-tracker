@@ -55,7 +55,7 @@ class CreatedTaskAdmin(admin.ModelAdmin):
 
 @admin.register(PlannedTask)
 class PlannedTaskAdmin(admin.ModelAdmin):
-    list_display = ('id', 'task_template', 'assignee', 'assigner', 'start_time', 'state', 'custom_description')
+    list_display = ('id', 'task_template', 'assignee', 'assigner', 'start_time', 'state')
     search_fields = ('task_template__task_name', 'assignee__email', 'assigner__email')
     list_filter = ('state', 'start_time', 'assignee', 'assigner')
 
