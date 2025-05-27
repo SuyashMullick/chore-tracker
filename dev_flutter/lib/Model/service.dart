@@ -6,8 +6,6 @@ import 'package:http/http.dart' as http;
 
 const baseURL = 'http://127.0.0.1:8000/api';
 
-enum PlannedTaskStatus { open, done, finished }
-
 class PlannedTaskDTO {
   final int id;
   final int points;
@@ -68,10 +66,11 @@ class UserDTO {
 
 class TaskDTO {
   final int id;
+  final int? creatorId;
   final int points;
   final String name;
   final GroupDTO group;
-  final String note;
+  final String? note;
 
   TaskDTO({
     required this.id,
@@ -79,6 +78,7 @@ class TaskDTO {
     required this.name,
     required this.note,
     required this.group,
+    this.creatorId,
   });
 
   factory TaskDTO.fromJson(Map<String, dynamic> json) {
@@ -87,6 +87,7 @@ class TaskDTO {
       points: json['points'],
       name: json['task_name'],
       note: json['description'],
+      creatorId: json['creatorId'],
       group: GroupDTO(
         // hard coded, temporary
         creatorId: 1,
@@ -105,6 +106,7 @@ class TaskDTO {
       'task_name': name,
       'description': note,
       'group': group.id,
+      'creatorId': creatorId,
     };
   }
 }
@@ -112,7 +114,7 @@ class TaskDTO {
 class GroupDTO {
   final int id;
   final String name;
-  final int creatorId;
+  final int? creatorId;
   final List<UserDTO> users;
 
   GroupDTO({
@@ -248,7 +250,7 @@ class Service {
     PlannedTask plannedTask,
     PlannedTaskStatus newStatus,
   ) async {
-    final url = '$baseURL/plannedTasks/${plannedTask.id}/';
+    final url = '$baseURL/plannedTasks/${plannedTask.getId()}/';
 
     try {
       // Create update payload

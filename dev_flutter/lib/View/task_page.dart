@@ -192,6 +192,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
                   _selectedGroup != null) {
                 final Task newTask = Task(
                   name: _taskNameEditingController.text,
+                  id: 0,
                   points: _selectedPoints,
                   group: _selectedGroup!,
                   desc: _taskDescEditingController.text,

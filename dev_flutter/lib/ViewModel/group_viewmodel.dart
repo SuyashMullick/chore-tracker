@@ -10,15 +10,15 @@ class GroupViewModel extends ChangeNotifier {
   }
 
   _loadUsers() {
-    User user1 = User(name: "User 1");
+    User user1 = User(name: "User 1", id: 1);
     _users.add(user1);
-    User user2 = User(name: "User 2");
+    User user2 = User(name: "User 2", id: 2);
     _users.add(user2);
-    User user3 = User(name: "User 3");
+    User user3 = User(name: "User 3", id: 3);
     _users.add(user3);
-    User user4 = User(name: "User 4");
+    User user4 = User(name: "User 4", id: 4);
     _users.add(user4);
-    User user5 = User(name: "User 5");
+    User user5 = User(name: "User 5", id: 5);
     _users.add(user5);
   }
 
@@ -99,13 +99,34 @@ class GroupViewModel extends ChangeNotifier {
 
 class User {
   late final String _name;
+  late int? _creatorId;
+  late int _id;
 
-  User({required name}) {
+  User({required name, required id, creatorId}) {
     _name = name;
+    _creatorId = creatorId;
+  }
+
+  getId() {
+    return _id;
   }
 
   getName() {
     return _name;
+  }
+
+   factory User.fromDTO(UserDTO userDto) {
+    return User(
+      name: userDto.name,
+      id: userDto.id,
+    );
+  }
+
+  static UserDTO toDTO(User user) {
+    return UserDTO(
+      id: user._id,
+      name: user._name,
+    );
   }
 
   @override
@@ -129,6 +150,10 @@ class Group {
       name: group.name,
       id: group.id,
     );
+  }
+
+  getId() {
+    return _id;
   }
 
   _addMembers(List<User> users) {

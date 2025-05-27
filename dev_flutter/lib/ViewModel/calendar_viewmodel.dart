@@ -104,9 +104,10 @@ enum PlannedTaskStatus {
 
 class PlannedTask {
   late final _task;
+  late final _id;
   late final List<User> _assignees;
   PlannedTaskStatus _status = PlannedTaskStatus.open;
-  int? _points;
+  late int _points;
   late final DateTime _startTime;
 
   factory PlannedTask.fromDTO(PlannedTaskDTO plannedtaskDTO) {
@@ -121,25 +122,13 @@ class PlannedTask {
 
   static PlannedTaskDTO toDTO(PlannedTask plannedTask) {
     return PlannedTaskDTO(
-      id: plannedTask.id,
-      task: TaskDTO(
-        id: plannedTask.taskId,
-        name: plannedTask.taskName,
-        points: plannedTask.points,
-        note: plannedTask.note,
-        group: GroupDTO(
-          id: plannedTask.groupId,
-          name: plannedTask.groupName,
-          creatorId: plannedTask.creatorId,
-          users: [],
-        ),
-      ),
-      points: plannedTask.points,
-      assignees: plannedTask.assignees
-          .map((user) => UserDTO(id: user.id, name: user.name))
-          .toList(),
-      status: plannedTask.status,
-      startTime: plannedTask.startTime,
+      id: plannedTask._id,
+      task: plannedTask._task.toDTO(),
+      points: plannedTask._points,
+      assignees:
+          plannedTask._assignees.map((user) => User.toDTO(user)).toList(),
+      status: plannedTask._status,
+      startTime: plannedTask._startTime,
     );
   }
 
@@ -156,6 +145,10 @@ class PlannedTask {
     if (status != null) {
       _status = status;
     }
+  }
+
+  getId() {
+    return _id;
   }
 
   getStatus() {
