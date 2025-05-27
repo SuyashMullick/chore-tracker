@@ -23,8 +23,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 122, 84, 186)),
         useMaterial3: true,
+        scaffoldBackgroundColor: const Color.fromARGB(255, 250, 191, 96),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -47,6 +49,49 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
+  final List<Widget> backgrounds = [
+    Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/bg.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+    Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/bg.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+    Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/bg.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+    Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/bg.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+    Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/bg.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,45 +101,67 @@ class _MyHomePageState extends State<MyHomePage> {
             currentPageIndex = index;
           });
         },
-        indicatorColor: Colors.lightBlue,
+        indicatorColor: const Color.fromARGB(255, 66, 234, 105),
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.calendar_month),
+            selectedIcon: Icon(Icons.calendar_month_rounded),
             icon: Icon(Icons.calendar_month),
             label: 'Calendar',
           ),
           NavigationDestination(
-            icon: Badge(child: Icon(Icons.task)),
+            icon: Badge(
+                isLabelVisible: false, child: Icon(Icons.inventory_rounded)),
             label: 'Tasks',
           ),
           NavigationDestination(
-            icon: Badge(child: Icon(Icons.group)),
+            icon: Badge(
+                isLabelVisible: false, child: Icon(Icons.castle_rounded)),
+            //Icons.castle_rounded
+            //Icons.cottage_rounded
+            //Icons.group_rounded,
             label: 'Groups',
           ),
           NavigationDestination(
-            icon: Badge(child: Icon(Icons.graphic_eq)),
+            icon: Badge(
+                isLabelVisible: false, child: Icon(Icons.insert_chart_rounded)),
             label: 'Statistics',
           ),
           NavigationDestination(
-            icon: Badge(child: Icon(Icons.person)),
+            icon: Badge(isLabelVisible: false, child: Icon(Icons.badge_rounded)),
             label: 'Profile',
           ),
         ],
       ),
-      body: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => CalendarViewModel()),
-          ChangeNotifierProvider(create: (_) => TaskViewModel()),
-          ChangeNotifierProvider(create: (_) => GroupViewModel()),
+      body: Stack(
+        children: [
+          backgrounds[currentPageIndex],
+
+          // Adds transition effect when switching pages
+          /*AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
+            child: KeyedSubtree(
+              key: ValueKey<int>(currentPageIndex),
+              child: backgrounds[currentPageIndex],
+            ),
+          ),*/
+          MultiProvider(
+            providers: [
+              ChangeNotifierProvider(create: (_) => CalendarViewModel()),
+              ChangeNotifierProvider(create: (_) => TaskViewModel()),
+              ChangeNotifierProvider(create: (_) => GroupViewModel()),
+            ],
+            child: <Widget>[
+              const CalendarPage(),
+              const TaskPage(),
+              const GroupPage(),
+              const StatisticsPage(),
+              const ProfilePage(),
+            ][currentPageIndex],
+          ),
         ],
-        child: <Widget>[
-          const CalendarPage(),
-          const TaskPage(),
-          const GroupPage(),
-          const StatisticsPage(),
-          const ProfilePage(),
-        ][currentPageIndex],
       ),
     );
   }

@@ -27,67 +27,72 @@ class CalendarPageState extends State<CalendarPage> {
       builder: (context, calendarViewModel, taskViewModel, groupViewModel, _) {
         return Column(
           children: [
-            WeekviewCalendar(
-              firstDay: DateTime.utc(2010, 1, 1),
-              lastDay: DateTime.utc(2030, 12, 31),
-              focusedDay: _focusedDay,
-              weekNumbersVisible: true,
-              calendarFormat: _calendarFormat,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-              // Change the style of the header of the calendar
-              headerStyle: HeaderStyle(
-                formatButtonShowsNext: false,
-              ),
-              calendarStyle: CalendarStyle(
-                weekNumberTextStyle: const TextStyle(
-                    fontSize: 16, color: Color.fromARGB(255, 90, 90, 90)),
-                // Current day is highlighted with a circle
-                todayDecoration: BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
+            Container(
+              color: Colors.grey.shade100,
+              child: WeekviewCalendar(
+                firstDay: DateTime.utc(2010, 1, 1),
+                lastDay: DateTime.utc(2030, 12, 31),
+                focusedDay: _focusedDay,
+                weekNumbersVisible: true,
+                calendarFormat: _calendarFormat,
+                startingDayOfWeek: StartingDayOfWeek.monday,
+                selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+                // Change the style of the header of the calendar
+                headerStyle: HeaderStyle(
+                  formatButtonShowsNext: false,
                 ),
-                // Selected day is highlighted with a circle
-                selectedDecoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.deepPurple, width: 2.0),
-                  color: Colors.transparent,
+                calendarStyle: CalendarStyle(
+                  weekNumberTextStyle: const TextStyle(
+                      fontSize: 16, color: Color.fromARGB(255, 90, 90, 90)),
+                  // Current day is highlighted with a circle
+                  todayDecoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 66, 234, 105),
+                    shape: BoxShape.circle,
+                  ),
+                  // Selected day is highlighted with a circle
+                  selectedDecoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                        color: const Color.fromARGB(255, 66, 58, 183),
+                        width: 2.0),
+                    color: Colors.transparent,
+                  ),
+                  selectedTextStyle: TextStyle(
+                    color: Color.fromARGB(255, 66, 58, 183),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                selectedTextStyle: TextStyle(
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              eventLoader: (day) =>
-                  calendarViewModel.getUnfinishedTasksForDay(day),
-              onFormatChanged: (calendarFormat) {
-                switch (calendarFormat) {
-                  case CalendarFormat.month:
-                    setState(() {
-                      _calendarFormat = CalendarFormat.month;
-                    });
-                    break;
-                  case CalendarFormat.twoWeeks:
-                    setState(() {
-                      _calendarFormat = CalendarFormat.twoWeeks;
-                    });
-                    break;
-                  case CalendarFormat.week:
-                    setState(() {
-                      _calendarFormat = CalendarFormat.week;
-                    });
-                    break;
-                }
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
+                eventLoader: (day) =>
+                    calendarViewModel.getUnfinishedTasksForDay(day),
+                onFormatChanged: (calendarFormat) {
+                  switch (calendarFormat) {
+                    case CalendarFormat.month:
+                      setState(() {
+                        _calendarFormat = CalendarFormat.month;
+                      });
+                      break;
+                    case CalendarFormat.twoWeeks:
+                      setState(() {
+                        _calendarFormat = CalendarFormat.twoWeeks;
+                      });
+                      break;
+                    case CalendarFormat.week:
+                      setState(() {
+                        _calendarFormat = CalendarFormat.week;
+                      });
+                      break;
+                  }
+                },
+                onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    _selectedDay = selectedDay;
+                    _focusedDay = focusedDay;
+                  });
+                },
+                onPageChanged: (focusedDay) {
                   _focusedDay = focusedDay;
-                });
-              },
-              onPageChanged: (focusedDay) {
-                _focusedDay = focusedDay;
-              },
+                },
+              ),
             ),
             Expanded(
               child: Builder(
@@ -96,7 +101,18 @@ class CalendarPageState extends State<CalendarPage> {
                       .getPlannedTasksForDay(_selectedDay)
                       .where((task) =>
                           task.getStatus() != PlannedTaskStatus.finished)
-                      .toList();
+                      .toList()
+                    ..sort((a, b) {
+                      if (a.getStatus() == PlannedTaskStatus.done &&
+                          b.getStatus() != PlannedTaskStatus.done) {
+                        return 1;
+                      } else if (a.getStatus() != PlannedTaskStatus.done &&
+                          b.getStatus() == PlannedTaskStatus.done) {
+                        return -1;
+                      } else {
+                        return 0;
+                      }
+                    });
 
                   return ListView.builder(
                       itemCount: tasksForDay.length + 1,
@@ -117,7 +133,22 @@ class CalendarPageState extends State<CalendarPage> {
                                   },
                                 );
                               },
-                              child: const Text("Plan new task"),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(255, 237, 237, 237),
+                                  border:
+                                      Border.all(color: const Color.fromARGB(255, 237, 237, 237)),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: const Text("Plan new task",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 66, 58, 183),
+                                    )),
+                              ),
                             ),
                           );
                         }
@@ -131,12 +162,13 @@ class CalendarPageState extends State<CalendarPage> {
                           padding: EdgeInsets.all(2),
                           height: 50.0,
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade400),
+                            border: Border.all(
+                                color: Colors.grey.shade400, width: 2),
                             borderRadius: BorderRadius.circular(10),
                             color: status == PlannedTaskStatus.open
                                 ? Colors.white
                                 : status == PlannedTaskStatus.done
-                                    ? const Color.fromARGB(255, 220, 220, 220)
+                                    ? const Color.fromARGB(184, 240, 240, 240)
                                     : Colors.green.shade100,
                           ),
                           child: Padding(
@@ -149,12 +181,12 @@ class CalendarPageState extends State<CalendarPage> {
                                   child: Text(
                                     taskName,
                                     style: TextStyle(
-                                      color: status == PlannedTaskStatus.open
-                                          ? Colors.blue
-                                          : status == PlannedTaskStatus.done
-                                              ? Colors.grey
-                                              : Colors.green,
-                                    ),
+                                        color: status == PlannedTaskStatus.open
+                                            ? Color.fromARGB(255, 47, 144, 183)
+                                            : status == PlannedTaskStatus.done
+                                                ? Colors.grey
+                                                : Colors.green,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Container(
@@ -186,7 +218,7 @@ class CalendarPageState extends State<CalendarPage> {
                                         return DropdownMenuItem<
                                             PlannedTaskStatus>(
                                           value: value,
-                                          child: Text(value.name),
+                                          child: Text(value.name.toUpperCase()),
                                         );
                                       }).toList(),
                                       onChanged: (newValue) {
