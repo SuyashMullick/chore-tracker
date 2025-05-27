@@ -1,6 +1,6 @@
 import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:multiselect/multiselect.dart';
+//import 'package:multiselect/multiselect.dart';
 import 'package:provider/provider.dart';
 
 class GroupPage extends StatefulWidget {
@@ -167,16 +167,35 @@ class GroupDialogState extends State<GroupDialog> {
               return null;
             },
           ),
-          DropDownMultiSelect<User>(
-            selectedValuesStyle: const TextStyle(color: Colors.transparent),
-            onChanged: (List<User> selected) {
-              setState(() {
-                _selectedMembers = selected;
-              });
-            },
-            options: widget.groupViewModel.getUsers(),
-            selectedValues: _selectedMembers,
-            whenEmpty: 'Select members',
+          DropdownButtonFormField(
+            onChanged: (x) {},
+            items: widget.groupViewModel.getUsers().map((member) {
+              return DropdownMenuItem(
+                value: member,
+                child: StatefulBuilder(
+                  builder: (context, setCbxState) {
+                    return Row(
+                      children: [
+                        Checkbox(
+                          value: _selectedMembers.contains(member),
+                          onChanged: (isSelected) {
+                            if (isSelected == true) {
+                              _selectedMembers.add(member);
+                            } else {
+                              _selectedMembers.remove(member);
+                            }
+                            setCbxState(() {});
+                            setState(() {});
+                          },
+                        ),
+                        const SizedBox(width: 10),
+                        Text(member.getName()),
+                      ],
+                    );
+                  },
+                ),
+              );
+            }).toList(),
           ),
         ]),
         actionsAlignment: MainAxisAlignment.spaceBetween,
@@ -199,7 +218,8 @@ class GroupDialogState extends State<GroupDialog> {
                   widget.groupViewModel.addGroup(newGroup);
                   widget.groupViewModel.addMembers(newGroup, _selectedMembers);
                 } else {
-                  widget.selectedGroup!.setName(_groupNameEditingController.text);
+                  widget.selectedGroup!
+                      .setName(_groupNameEditingController.text);
                   widget.groupViewModel.refreshView();
                 }
                 _groupNameEditingController.clear();

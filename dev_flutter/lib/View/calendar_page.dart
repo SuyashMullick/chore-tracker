@@ -4,7 +4,7 @@ import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:multiselect/multiselect.dart';
+//import 'package:multiselect/multiselect.dart';
 import 'package:provider/provider.dart';
 import 'package:weekview_calendar/weekview_calendar.dart';
 import 'package:intl/intl.dart';
@@ -137,9 +137,11 @@ class CalendarPageState extends State<CalendarPage> {
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: const Color.fromARGB(255, 237, 237, 237),
-                                  border:
-                                      Border.all(color: const Color.fromARGB(255, 237, 237, 237)),
+                                  color:
+                                      const Color.fromARGB(255, 237, 237, 237),
+                                  border: Border.all(
+                                      color: const Color.fromARGB(
+                                          255, 237, 237, 237)),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 child: const Text("Plan new task",
@@ -304,19 +306,39 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                 return null;
               },
             ),
-            DropDownMultiSelect<User>(
-              selectedValuesStyle: const TextStyle(color: Colors.transparent),
-              onChanged: (List<User> selected) {
-                setState(() {
-                  _selectedMembers = selected;
-                });
-              },
-              options: _selectedTask != null
+            DropdownButtonFormField(
+              onChanged: (x) {},
+              items: _selectedTask != null
                   ? widget.groupViewModel
                       .getGroupMembers(_selectedTask!.getGroup())
+                      .map((member) {
+                      return DropdownMenuItem(
+                        value: member,
+                        child: StatefulBuilder(
+                          builder: (context, setCbxState) {
+                            return Row(
+                              children: [
+                                Checkbox(
+                                  value: _selectedMembers.contains(member),
+                                  onChanged: (isSelected) {
+                                    if (isSelected == true) {
+                                      _selectedMembers.add(member);
+                                    } else {
+                                      _selectedMembers.remove(member);
+                                    }
+                                    setCbxState(() {});
+                                    setState(() {});
+                                  },
+                                ),
+                                const SizedBox(width: 10),
+                                Text(member.getName()),
+                              ],
+                            );
+                          },
+                        ),
+                      );
+                    }).toList()
                   : [],
-              selectedValues: _selectedMembers,
-              whenEmpty: 'Select assignees',
             ),
             DropdownButtonFormField<int>(
               value: _selectedPoints,

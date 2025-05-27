@@ -136,11 +136,11 @@ class User {
 }
 
 class Group {
-  late final _id;
+  late final int _id;
   late String _name;
   final List<User> _members = [];
 
-  Group({required name, required id}) {
+  Group({required String name, required int id}) {
     _name = name;
     _id = id;
   }
