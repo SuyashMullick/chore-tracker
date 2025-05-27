@@ -18,7 +18,7 @@ class TaskPage extends StatelessWidget {
             widgets.add(
               Card(
                 child: ListTile(
-                  leading: const Icon(Icons.task),
+                  leading: const Icon(Icons.inventory_rounded),
                   title: Text(task.getName()),
                   subtitle: Text(task.getGroup().getName()),
                   trailing: IconButton(
