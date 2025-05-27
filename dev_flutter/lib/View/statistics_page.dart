@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:pie_chart/pie_chart.dart' as pie;
 import 'package:fl_chart/fl_chart.dart' as fl;
 

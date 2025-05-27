@@ -167,6 +167,9 @@ class GroupDialogState extends State<GroupDialog> {
               return null;
             },
           ),
+          Text(
+            _selectedMembers.isEmpty ? 'Select members' : _selectedMembers.map((user) => user.getName()).join(' , '),
+          ),
           DropdownButtonFormField(
             onChanged: (x) {},
             items: widget.groupViewModel.getUsers().map((member) {

@@ -4,7 +4,6 @@ import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
-//import 'package:multiselect/multiselect.dart';
 import 'package:provider/provider.dart';
 import 'package:weekview_calendar/weekview_calendar.dart';
 import 'package:intl/intl.dart';
@@ -305,6 +304,11 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                 }
                 return null;
               },
+            ),
+            Text(
+              _selectedMembers.isEmpty
+                  ? 'Select assignees'
+                  : _selectedMembers.map((user) => user.getName()).join(' , '),
             ),
             DropdownButtonFormField(
               onChanged: (x) {},

@@ -29,7 +29,7 @@ class CalendarViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void planTask(date, Task task, List<User> assignees, points) {
+  void planTask(DateTime date, Task task, List<User> assignees, points) {
     if (_tasks[date] == null) {
       _tasks[date] = [];
     }
@@ -40,7 +40,7 @@ class CalendarViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeTask(date, startTime, endTime, PlannedTask task) {
+  void removeTask(DateTime date, PlannedTask task) {
     if (_tasks[date] == null) {
       return;
     }
@@ -112,7 +112,7 @@ class PlannedTask {
 
   factory PlannedTask.fromDTO(PlannedTaskDTO plannedtaskDTO) {
     return PlannedTask(
-      assignees: plannedtaskDTO.assignees,
+      assignees: plannedtaskDTO.assignees.map((userDto) => User.fromDTO(userDto)).toList() ,
       task: Task.fromDTO(plannedtaskDTO.task),
       points: plannedtaskDTO.points,
       startTime: plannedtaskDTO.startTime,
@@ -133,10 +133,10 @@ class PlannedTask {
   }
 
   PlannedTask(
-      {required assignees,
-      required task,
-      required points,
-      required startTime,
+      {required List<User> assignees,
+      required Task task,
+      required int points,
+      required DateTime startTime,
       status}) {
     _task = task;
     _assignees = assignees;
@@ -147,19 +147,19 @@ class PlannedTask {
     }
   }
 
-  getId() {
+  int getId() {
     return _id;
   }
 
-  getStatus() {
+  PlannedTaskStatus getStatus() {
     return _status;
   }
 
-  setStatus(PlannedTaskStatus status) {
+  void setStatus(PlannedTaskStatus status) {
     _status = status;
   }
 
-  getName() {
+  String getName() {
     return _task.getName();
   }
 }
