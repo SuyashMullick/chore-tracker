@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
             currentPageIndex = index;
           });
         },
-        indicatorColor: const Color.fromARGB(255, 98, 198, 238),
+        indicatorColor: const Color.fromARGB(255, 66, 234, 105),
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(

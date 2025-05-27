@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:weekview_calendar/weekview_calendar.dart';
 import 'package:intl/intl.dart';
 
-
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
 
@@ -47,17 +46,19 @@ class CalendarPageState extends State<CalendarPage> {
                       fontSize: 16, color: Color.fromARGB(255, 90, 90, 90)),
                   // Current day is highlighted with a circle
                   todayDecoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: const Color.fromARGB(255, 66, 234, 105),
                     shape: BoxShape.circle,
                   ),
                   // Selected day is highlighted with a circle
                   selectedDecoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.deepPurple, width: 2.0),
+                    border: Border.all(
+                        color: const Color.fromARGB(255, 66, 58, 183),
+                        width: 2.0),
                     color: Colors.transparent,
                   ),
                   selectedTextStyle: TextStyle(
-                    color: Colors.deepPurple,
+                    color: Color.fromARGB(255, 66, 58, 183),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -132,9 +133,21 @@ class CalendarPageState extends State<CalendarPage> {
                                   },
                                 );
                               },
-                              child: const Text(
-                                "Plan new task",
-                                //style: TextStyle ()
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(255, 237, 237, 237),
+                                  border:
+                                      Border.all(color: const Color.fromARGB(255, 237, 237, 237)),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: const Text("Plan new task",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 66, 58, 183),
+                                    )),
                               ),
                             ),
                           );
@@ -149,7 +162,8 @@ class CalendarPageState extends State<CalendarPage> {
                           padding: EdgeInsets.all(2),
                           height: 50.0,
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade400),
+                            border: Border.all(
+                                color: Colors.grey.shade400, width: 2),
                             borderRadius: BorderRadius.circular(10),
                             color: status == PlannedTaskStatus.open
                                 ? Colors.white
@@ -167,12 +181,12 @@ class CalendarPageState extends State<CalendarPage> {
                                   child: Text(
                                     taskName,
                                     style: TextStyle(
-                                      color: status == PlannedTaskStatus.open
-                                          ? Color.fromARGB(255, 47, 144, 183)
-                                          : status == PlannedTaskStatus.done
-                                              ? Colors.grey
-                                              : Colors.green,
-                                    ),
+                                        color: status == PlannedTaskStatus.open
+                                            ? Color.fromARGB(255, 47, 144, 183)
+                                            : status == PlannedTaskStatus.done
+                                                ? Colors.grey
+                                                : Colors.green,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Container(
