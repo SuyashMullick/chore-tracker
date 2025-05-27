@@ -1,8 +1,9 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pie_chart/pie_chart.dart' as pie;
 import 'package:fl_chart/fl_chart.dart' as fl;
-
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -34,71 +35,89 @@ class StatisticsPageState extends State<StatisticsPage> {
 
     users.sort((a, b) => b['points'].compareTo(a['points']));
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-        padding: const EdgeInsets.all(16.0),
+return Scaffold(
+  backgroundColor: Colors.transparent, 
+  body: SingleChildScrollView(
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 248, 241, 249),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ToggleButtons(
-              isSelected: [isWeekly, !isWeekly],
-              onPressed: (index) {
-                setState(() {
-                  isWeekly = index == 0;
-                });
-              },
-              children: const [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Text('Weekly'),
+                ToggleButtons(
+                  isSelected: [isWeekly, !isWeekly],
+                  onPressed: (index) {
+                    setState(() {
+                      isWeekly = index == 0;
+                    });
+                  },
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: Text('Weekly'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: Text('Monthly'),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Text('Monthly'),
+                const SizedBox(height: 20),
+                const Text(
+                  'Leaderboard',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 200,
+                  child: ListView.builder(
+                    itemCount: users.length,
+                    itemBuilder: (_, index) {
+                      final user = users[index];
+                      return ListTile(
+                        title: Text(user['name']),
+                        trailing: Text('${user['points']} pts'),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 2),
+                const Text(
+                  'Statistics',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                if (isWeekly)
+                  _buildPieChart(users)
+                else
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _buildPieChart(users)),
+                      const SizedBox(width: 20),
+                      Expanded(
+                          child: SizedBox(
+                              height: 200,
+                              child: _buildBarChart(monthlyWeeks))),
+                    ],
+                  ),
               ],
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'Leaderboard',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 200,
-              child: ListView.builder(
-                itemCount: users.length,
-                itemBuilder: (_, index) {
-                  final user = users[index];
-                  return ListTile(
-                    title: Text(user['name']),
-                    trailing: Text('${user['points']} pts'),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 2),
-            const Text(
-  'Statistics',
-  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-),
-const SizedBox(height: 10),
-if (isWeekly)
-  _buildPieChart(users)
-else
-  Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Expanded(child: _buildPieChart(users)),
-      const SizedBox(width: 20),
-      Expanded(child: SizedBox(height: 200, child: _buildBarChart(monthlyWeeks))),
-    ],
-  ),
-          ],
+          ),
         ),
       ),
-    ),
     );
   }
 
@@ -143,6 +162,7 @@ else
           bottomTitles: fl.AxisTitles(
             sideTitles: fl.SideTitles(
               showTitles: true,
+              reservedSize: 30,
               getTitlesWidget: (value, _) {
                 const weekLabels = ['W1', 'W2', 'W3', 'W4'];
                 return Padding(
@@ -155,8 +175,10 @@ else
           leftTitles: fl.AxisTitles(
             sideTitles: fl.SideTitles(showTitles: false),
           ),
-          topTitles: fl.AxisTitles(sideTitles: fl.SideTitles(showTitles: false)),
-          rightTitles: fl.AxisTitles(sideTitles: fl.SideTitles(showTitles: false)),
+          topTitles:
+              fl.AxisTitles(sideTitles: fl.SideTitles(showTitles: false)),
+          rightTitles:
+              fl.AxisTitles(sideTitles: fl.SideTitles(showTitles: false)),
         ),
         gridData: fl.FlGridData(show: true),
         borderData: fl.FlBorderData(show: false),
