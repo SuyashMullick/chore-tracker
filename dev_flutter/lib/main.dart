@@ -1,4 +1,3 @@
-import 'package:dev_flutter/View/animated_background.dart';
 import 'package:dev_flutter/View/calendar_page.dart';
 import 'package:dev_flutter/View/group_page.dart';
 import 'package:dev_flutter/View/profile_page.dart';
@@ -9,7 +8,6 @@ import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:animate_gradient/animate_gradient.dart';
 
 void main() {
   runApp(const MyApp());
@@ -55,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/calendar_bg.png'),
+          image: AssetImage('assets/bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -63,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/task_bg.png'),
+          image: AssetImage('assets/bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -71,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/group_bg.png'),
+          image: AssetImage('assets/bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -79,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/stats_bg.png'),
+          image: AssetImage('assets/bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -87,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/profile_bg.png'),
+          image: AssetImage('assets/bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -118,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           NavigationDestination(
             icon: Badge(
-                isLabelVisible: false, child: Icon(Icons.cottage_rounded)),
+                isLabelVisible: false, child: Icon(Icons.castle_rounded)),
             //Icons.castle_rounded
             //Icons.cottage_rounded
             //Icons.group_rounded,
@@ -138,9 +136,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(
         children: [
           //AnimatedBackground(),
+          backgrounds[currentPageIndex],
 
           // Adds transition effect when switching pages
-          AnimatedSwitcher(
+          /*AnimatedSwitcher(
             duration: const Duration(milliseconds: 500),
             switchInCurve: Curves.easeIn,
             switchOutCurve: Curves.easeOut,
@@ -148,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
               key: ValueKey<int>(currentPageIndex),
               child: backgrounds[currentPageIndex],
             ),
-          ),
+          ),*/
           MultiProvider(
             providers: [
               ChangeNotifierProvider(create: (_) => CalendarViewModel()),
