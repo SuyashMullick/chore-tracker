@@ -32,7 +32,7 @@ class GroupPageState extends State<GroupPage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: ListTile(
-                        leading: const Icon(Icons.group),
+                        leading: const Icon(Icons.castle_rounded),
                         title: Text(group.getName()),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
