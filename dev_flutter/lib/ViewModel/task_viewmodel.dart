@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 
 class Task {
+  late int _id;
+  int? _creatorId;
   late int _points;
   late String _name;
   late Group _group;
@@ -12,31 +14,36 @@ class Task {
   factory Task.fromDTO(TaskDTO task) {
     return Task(
       name: task.name,
+      id: task.id,
       group: Group.fromDTO(task.group),
       points: task.points,
-      desc: task.note
+      desc: task.note,
+      creatorId: task.creatorId,
     );
   }
 
   static TaskDTO toDTO(Task task) {
     return TaskDTO(
-      id: task.id,
-      points: task.points,
-      name: task.name,
-      note: task.description,
+      id: task._id,
+      points: task._points,
+      name: task._name,
+      note: task._desc,
+      creatorId: task._creatorId,
       group: GroupDTO(
-        id: task.groupId,
-        name: task.groupName,
-        creatorId: task.creatorId,
-        users: task.members.map((user) => UserDTO(id: user.id, name: user.name)).toList(),
+        id: task._group.getId(),
+        name: task._group.getName(),
+        creatorId: task._creatorId,
+        users: task._group.getMembers().map((user) => UserDTO(id: user.getId(), name: user.getName())).toList(),
       ),
     );
   }
 
-  Task({required name, required Group group, required points, desc}) {
+  Task({required name, required Group group, required points, required id, desc, creatorId}) {
     _desc = desc;
+    _id = id;
     _name = name;
     _group = group;
+    _creatorId = creatorId;
     setPoints(points);
   }
 
