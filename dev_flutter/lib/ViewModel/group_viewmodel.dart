@@ -10,15 +10,15 @@ class GroupViewModel extends ChangeNotifier {
   }
 
   Future<bool> _loadUsers() async {
-    User user1 = User(name: "User 1", id: 1);
+    User user1 = User(username: "User 1", id: 1);
     _users.add(user1);
-    User user2 = User(name: "User 2", id: 2);
+    User user2 = User(username: "User 2", id: 2);
     _users.add(user2);
-    User user3 = User(name: "User 3", id: 3);
+    User user3 = User(username: "User 3", id: 3);
     _users.add(user3);
-    User user4 = User(name: "User 4", id: 4);
+    User user4 = User(username: "User 4", id: 4);
     _users.add(user4);
-    User user5 = User(name: "User 5", id: 5);
+    User user5 = User(username: "User 5", id: 5);
     _users.add(user5);
 
     return true;
@@ -102,12 +102,13 @@ class GroupViewModel extends ChangeNotifier {
 }
 
 class User {
-  late final String _name;
   late int _id;
+  late final String _name;
 
-  User({required String name, required int id}) {
+
+  User({required int id, required String username,}) {
     _id = id;
-    _name = name;
+    _name = username;
   }
 
   void setId(int id) {
@@ -124,7 +125,7 @@ class User {
 
    factory User.fromDTO(UserDTO userDto) {
     return User(
-      name: userDto.name,
+      username: userDto.name,
       id: userDto.id,
     );
   }

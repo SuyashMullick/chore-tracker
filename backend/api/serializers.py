@@ -8,7 +8,7 @@ from .services import create_created_task
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'gender']
 
 class GroupSerializer(ModelSerializer):
     class Meta:
@@ -26,6 +26,9 @@ class CreatedTaskSerializer(ModelSerializer):
         fields = '__all__'
 
 class PlannedTaskSerializer(ModelSerializer):
+    task_template = CreatedTaskSerializer(read_only=True)
+    assignee = UserSerializer(read_only=True)
+    assigner = UserSerializer(read_only=True)
     class Meta:
         model = PlannedTask
         fields = '__all__'
