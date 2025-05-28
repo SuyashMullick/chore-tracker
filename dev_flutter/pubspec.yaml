@@ -40,7 +40,6 @@ dependencies:
   provider: ^6.1.5
   weekview_calendar: ^0.0.9
   intl: ^0.19.0
-  multiselect: ^0.1.1
   pie_chart: ^5.3.2 
   fl_chart: ^1.0.0
 
@@ -53,7 +52,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

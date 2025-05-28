@@ -29,7 +29,7 @@ class CalendarViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void planTask(date, Task task, List<User> assignees, points) {
+  void planTask(DateTime date, Task task, List<User> assignees, points) {
     if (_tasks[date] == null) {
       _tasks[date] = [];
     }
@@ -40,7 +40,7 @@ class CalendarViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeTask(date, startTime, endTime, PlannedTask task) {
+  void removeTask(DateTime date, PlannedTask task) {
     if (_tasks[date] == null) {
       return;
     }
@@ -59,13 +59,14 @@ class CalendarViewModel extends ChangeNotifier {
     // Group group1 = groups[0];
     // Group group2 = groups[1];
 
-    List<PlannedTask> plannedTasks = await Service.loadCalendarTasks();
-    for (PlannedTask plannedTask in plannedTasks) {
-      if (_tasks[plannedTask._startTime] == null) {
-        _tasks[plannedTask._startTime] = [];
-      }
-      _tasks[plannedTask._startTime]?.add(plannedTask);
-    }
+    // uncomment when done in backend
+    // List<PlannedTask> plannedTasks = await Service.loadCalendarTasks();
+    // for (PlannedTask plannedTask in plannedTasks) {
+    //   if (_tasks[plannedTask._startTime] == null) {
+    //     _tasks[plannedTask._startTime] = [];
+    //   }
+    //   _tasks[plannedTask._startTime]?.add(plannedTask);
+    // }
 
     // DateTime today =
     //     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
@@ -103,8 +104,8 @@ enum PlannedTaskStatus {
 }
 
 class PlannedTask {
-  late final _task;
-  late final _id;
+  late final Task _task;
+  late final int _id;
   late final List<User> _assignees;
   PlannedTaskStatus _status = PlannedTaskStatus.open;
   late int _points;
@@ -112,7 +113,7 @@ class PlannedTask {
 
   factory PlannedTask.fromDTO(PlannedTaskDTO plannedtaskDTO) {
     return PlannedTask(
-      assignees: plannedtaskDTO.assignees,
+      assignees: plannedtaskDTO.assignees.map((userDto) => User.fromDTO(userDto)).toList() ,
       task: Task.fromDTO(plannedtaskDTO.task),
       points: plannedtaskDTO.points,
       startTime: plannedtaskDTO.startTime,
@@ -123,7 +124,7 @@ class PlannedTask {
   static PlannedTaskDTO toDTO(PlannedTask plannedTask) {
     return PlannedTaskDTO(
       id: plannedTask._id,
-      task: plannedTask._task.toDTO(),
+      task: Task.toDTO(plannedTask._task),
       points: plannedTask._points,
       assignees:
           plannedTask._assignees.map((user) => User.toDTO(user)).toList(),
@@ -133,10 +134,10 @@ class PlannedTask {
   }
 
   PlannedTask(
-      {required assignees,
-      required task,
-      required points,
-      required startTime,
+      {required List<User> assignees,
+      required Task task,
+      required int points,
+      required DateTime startTime,
       status}) {
     _task = task;
     _assignees = assignees;
@@ -147,19 +148,19 @@ class PlannedTask {
     }
   }
 
-  getId() {
+  int getId() {
     return _id;
   }
 
-  getStatus() {
+  PlannedTaskStatus getStatus() {
     return _status;
   }
 
-  setStatus(PlannedTaskStatus status) {
+  void setStatus(PlannedTaskStatus status) {
     _status = status;
   }
 
-  getName() {
+  String getName() {
     return _task.getName();
   }
 }

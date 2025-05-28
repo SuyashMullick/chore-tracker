@@ -9,7 +9,7 @@ class GroupViewModel extends ChangeNotifier {
     _loadGroups();
   }
 
-  _loadUsers() {
+  Future<bool> _loadUsers() async {
     User user1 = User(name: "User 1", id: 1);
     _users.add(user1);
     User user2 = User(name: "User 2", id: 2);
@@ -20,9 +20,11 @@ class GroupViewModel extends ChangeNotifier {
     _users.add(user4);
     User user5 = User(name: "User 5", id: 5);
     _users.add(user5);
+
+    return true;
   }
 
-  _loadGroups() {
+  Future<bool> _loadGroups() async {
     // for test
     _loadUsers();
     Group group1 = Group(name: "SweetHome", id: 1);
@@ -42,13 +44,15 @@ class GroupViewModel extends ChangeNotifier {
     _groups.add(group3);
 
     notifyListeners();
+
+    return true;
   }
 
   List<Group> getGroups() {
     return _groups;
   }
 
-  addMembers(Group group, List<User> users) {
+  void addMembers(Group group, List<User> users) {
     if (_groups.contains(group)) {
       group._addMembers(users);
 
@@ -56,7 +60,7 @@ class GroupViewModel extends ChangeNotifier {
     }
   }
 
-  refreshView() {
+  void refreshView() {
     notifyListeners();
   }
 
@@ -70,7 +74,7 @@ class GroupViewModel extends ChangeNotifier {
     return result;
   }
 
-  addGroup(Group group) {
+  void addGroup(Group group) {
     if (!_groups.contains(group)) {
       _groups.add(group);
 
@@ -99,19 +103,22 @@ class GroupViewModel extends ChangeNotifier {
 
 class User {
   late final String _name;
-  late int? _creatorId;
   late int _id;
 
-  User({required name, required id, creatorId}) {
+  User({required String name, required int id}) {
+    _id = id;
     _name = name;
-    _creatorId = creatorId;
   }
 
-  getId() {
+  void setId(int id) {
+    _id = id;
+  }
+
+  int getId() {
     return _id;
   }
 
-  getName() {
+  String getName() {
     return _name;
   }
 
@@ -136,39 +143,51 @@ class User {
 }
 
 class Group {
-  late final _id;
+  late final int _id;
+  int? _creatorId;
   late String _name;
   final List<User> _members = [];
 
-  Group({required name, required id}) {
+  Group({required String name, required int id, creatorId}) {
     _name = name;
     _id = id;
+    _creatorId = creatorId;
   }
 
-  factory Group.fromDTO(GroupDTO group) {
+  factory Group.fromDTO(GroupDTO groupDTO) {
     return Group(
-      name: group.name,
-      id: group.id,
+      name: groupDTO.name,
+      id: groupDTO.id,
+      creatorId: groupDTO.creatorId,
     );
   }
 
-  getId() {
+  static GroupDTO toDTO(Group group) {
+    return GroupDTO(
+      id: group._id,
+      name: group._name,
+      creatorId: group._creatorId,
+      users: group._members.map((member) => User.toDTO(member)).toList(),
+    );
+  }
+
+  int getId() {
     return _id;
   }
 
-  _addMembers(List<User> users) {
+  void _addMembers(List<User> users) {
     for (var user in users) {
       _addMember(user);
     }
   }
 
-  _addMember(User user) {
+  void _addMember(User user) {
     if (!_members.contains(user)) {
       _members.add(user);
     }
   }
 
-  setName(String name) {
+  void setName(String name) {
     if (name.isNotEmpty) {
       _name = name;
     }
@@ -182,11 +201,11 @@ class Group {
     return _members;
   }
 
-  isPartOfGroup(User user) {
+  bool isPartOfGroup(User user) {
     return _members.contains(user);
   }
 
-  getName() {
+  String getName() {
     return _name;
   }
 }

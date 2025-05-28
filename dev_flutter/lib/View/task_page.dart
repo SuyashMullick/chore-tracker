@@ -123,10 +123,12 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
             hint: const Text('Select a group for the task'),
             items: widget.groupViewModel
                 .getGroups()
-                .map((group) => DropdownMenuItem(
-                      value: group,
-                      child: Text(group.getName()),
-                    ))
+                .map(
+                  (group) => DropdownMenuItem(
+                    value: group,
+                    child: Text(group.getName()),
+                  ),
+                )
                 .toList(),
             onChanged: (value) {
               setState(() {
@@ -141,7 +143,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
             },
           ),
           TextField(
-            maxLength: 30,
+            maxLength: 100,
             controller: _taskDescEditingController,
             decoration: const InputDecoration(
               labelText: 'Description of the task (optional)',

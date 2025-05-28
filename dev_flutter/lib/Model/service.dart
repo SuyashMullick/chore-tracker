@@ -1,10 +1,11 @@
 import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
-import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:developer';
 
-const baseURL = 'http://127.0.0.1:8000/api';
+//const baseURL = 'http://127.0.0.1:8000/api';
+const baseURL = 'http://10.0.2.2:8000/api'; // for android emulator
 
 class PlannedTaskDTO {
   final int id;
@@ -66,7 +67,6 @@ class UserDTO {
 
 class TaskDTO {
   final int id;
-  final int? creatorId;
   final int points;
   final String name;
   final GroupDTO group;
@@ -78,7 +78,6 @@ class TaskDTO {
     required this.name,
     required this.note,
     required this.group,
-    this.creatorId,
   });
 
   factory TaskDTO.fromJson(Map<String, dynamic> json) {
@@ -87,7 +86,6 @@ class TaskDTO {
       points: json['points'],
       name: json['task_name'],
       note: json['description'],
-      creatorId: json['creatorId'],
       group: GroupDTO(
         // hard coded, temporary
         creatorId: 1,
@@ -106,7 +104,6 @@ class TaskDTO {
       'task_name': name,
       'description': note,
       'group': group.id,
-      'creatorId': creatorId,
     };
   }
 }
@@ -120,7 +117,7 @@ class GroupDTO {
   GroupDTO({
     required this.id,
     required this.name,
-    required this.creatorId,
+    this.creatorId,
     required this.users,
   });
 
@@ -144,7 +141,7 @@ class GroupDTO {
 
 class Service {
   static Future<List<Task>> loadTasks() async {
-    const url = '$baseURL/tasks/';
+    const url = '$baseURL/created-tasks/';
     try {
       final response = await http.get(Uri.parse(url));
       List<Task> tasks = [];
@@ -161,7 +158,7 @@ class Service {
         throw Exception('Failed to load tasks');
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
       return [];
     }
   }
@@ -184,13 +181,13 @@ class Service {
         throw Exception('Failed to load tasks');
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
       return [];
     }
   }
 
   static Future<bool> createTask(Task task) async {
-    const url = '$baseURL/tasks/';
+    const url = '$baseURL/created-tasks/';
     try {
       // Convert domain Task to TaskDTO and then to JSON
       final TaskDTO taskDTO = Task.toDTO(task);
@@ -205,14 +202,15 @@ class Service {
 
       // Check response status
       if (response.statusCode == 201) {
+        task.setId(jsonDecode(response.body)['id']);
         return true;
       } else {
-        print('Failed to create task. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        log('Failed to create task. Status code: ${response.statusCode}');
+        log('Response body: ${response.body}');
         return false;
       }
     } catch (e) {
-      print('Error creating task: $e');
+      log('Error creating task: $e');
       return false;
     }
   }
@@ -236,12 +234,12 @@ class Service {
       if (response.statusCode == 201) {
         return true;
       } else {
-        print('Failed to create planned task. Status: ${response.statusCode}');
-        print('Response: ${response.body}');
+        log('Failed to create planned task. Status: ${response.statusCode}');
+        log('Response: ${response.body}');
         return false;
       }
     } catch (e) {
-      print('Error creating planned task: $e');
+      log('Error creating planned task: $e');
       return false;
     }
   }
@@ -267,12 +265,12 @@ class Service {
       if (response.statusCode == 200) {
         return true;
       } else {
-        print('Failed to update task state. Status: ${response.statusCode}');
-        print('Response: ${response.body}');
+        log('Failed to update task state. Status: ${response.statusCode}');
+        log('Response: ${response.body}');
         return false;
       }
     } catch (e) {
-      print('Error updating task state: $e');
+      log('Error updating task state: $e');
       return false;
     }
   }

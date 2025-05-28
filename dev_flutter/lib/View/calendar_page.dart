@@ -4,7 +4,6 @@ import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:multiselect/multiselect.dart';
 import 'package:provider/provider.dart';
 import 'package:weekview_calendar/weekview_calendar.dart';
 import 'package:intl/intl.dart';
@@ -137,9 +136,11 @@ class CalendarPageState extends State<CalendarPage> {
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: const Color.fromARGB(255, 237, 237, 237),
-                                  border:
-                                      Border.all(color: const Color.fromARGB(255, 237, 237, 237)),
+                                  color:
+                                      const Color.fromARGB(255, 237, 237, 237),
+                                  border: Border.all(
+                                      color: const Color.fromARGB(
+                                          255, 237, 237, 237)),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 child: const Text("Plan new task",
@@ -267,6 +268,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
   Task? _selectedTask;
   List<User> _selectedMembers = [];
   int? _selectedPoints;
+  bool okPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -304,19 +306,59 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                 return null;
               },
             ),
-            DropDownMultiSelect<User>(
-              selectedValuesStyle: const TextStyle(color: Colors.transparent),
-              onChanged: (List<User> selected) {
-                setState(() {
-                  _selectedMembers = selected;
-                });
-              },
-              options: _selectedTask != null
-                  ? widget.groupViewModel
-                      .getGroupMembers(_selectedTask!.getGroup())
-                  : [],
-              selectedValues: _selectedMembers,
-              whenEmpty: 'Select assignees',
+            Stack(
+              children: [
+                DropdownButtonFormField(
+                  onChanged: (x) {},
+                  items: _selectedTask != null
+                      ? widget.groupViewModel
+                          .getGroupMembers(_selectedTask!.getGroup())
+                          .map((member) {
+                          return DropdownMenuItem(
+                            value: member,
+                            child: StatefulBuilder(
+                              builder: (context, setCbxState) {
+                                return Row(
+                                  children: [
+                                    Checkbox(
+                                      value: _selectedMembers.contains(member),
+                                      onChanged: (isSelected) {
+                                        if (isSelected == true) {
+                                          _selectedMembers.add(member);
+                                        } else {
+                                          _selectedMembers.remove(member);
+                                        }
+                                        setCbxState(() {});
+                                        setState(() {});
+                                      },
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(member.getName()),
+                                  ],
+                                );
+                              },
+                            ),
+                          );
+                        }).toList()
+                      : [],
+                ),
+                Positioned(
+                  top: 14,
+                  child: Text(
+                    style: TextStyle(
+                      fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize,
+                      color: okPressed && _selectedMembers.isEmpty
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).textTheme.bodyMedium!.color,
+                    ),
+                    _selectedMembers.isEmpty
+                        ? 'Select assignees'
+                        : _selectedMembers
+                            .map((user) => user.getName())
+                            .join(' , '),
+                  ),
+                ),
+              ],
             ),
             DropdownButtonFormField<int>(
               value: _selectedPoints,
@@ -355,6 +397,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
           ),
           TextButton(
             onPressed: () {
+              setState(() => okPressed = true);
               if (!_formKey.currentState!.validate() ||
                   _selectedMembers.isEmpty) {
                 return;
@@ -363,6 +406,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                 widget.calendarViewModel.planTask(widget.date, _selectedTask!,
                     _selectedMembers, _selectedPoints);
               }
+              okPressed = false;
               _selectedPoints = null;
               _selectedMembers = [];
               _selectedTask = null;

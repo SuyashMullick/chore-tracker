@@ -1,6 +1,6 @@
 import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:multiselect/multiselect.dart';
+//import 'package:multiselect/multiselect.dart';
 import 'package:provider/provider.dart';
 
 class GroupPage extends StatefulWidget {
@@ -127,6 +127,7 @@ class GroupDialogState extends State<GroupDialog> {
   late final TextEditingController _groupNameEditingController;
   final _formKey = GlobalKey<FormState>();
   List<User> _selectedMembers = [];
+  bool okPressed = false;
 
   @override
   void initState() {
@@ -153,32 +154,74 @@ class GroupDialogState extends State<GroupDialog> {
         title: widget.selectedGroup != null
             ? const Text('Edit group')
             : const Text('Create a group'),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextFormField(
-            maxLength: 20,
-            controller: _groupNameEditingController,
-            decoration: const InputDecoration(
-              labelText: 'Name of the group',
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              maxLength: 20,
+              controller: _groupNameEditingController,
+              decoration: const InputDecoration(
+                labelText: 'Name of the group',
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'A name has to be set';
+                }
+                return null;
+              },
             ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'A name has to be set';
-              }
-              return null;
-            },
-          ),
-          DropDownMultiSelect<User>(
-            selectedValuesStyle: const TextStyle(color: Colors.transparent),
-            onChanged: (List<User> selected) {
-              setState(() {
-                _selectedMembers = selected;
-              });
-            },
-            options: widget.groupViewModel.getUsers(),
-            selectedValues: _selectedMembers,
-            whenEmpty: 'Select members',
-          ),
-        ]),
+            Stack(
+              children: [
+                Positioned(
+                  top: 14,
+                  child: Text(
+                    style: TextStyle(
+                      fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize,
+                      color: okPressed && _selectedMembers.isEmpty
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).textTheme.bodyMedium!.color,
+                    ),
+                    _selectedMembers.isEmpty
+                        ? 'Select members'
+                        : _selectedMembers
+                            .map((user) => user.getName())
+                            .join(' , '),
+                  ),
+                ),
+                DropdownButtonFormField(
+                  onChanged: (x) {},
+                  items: widget.groupViewModel.getUsers().map((member) {
+                    return DropdownMenuItem(
+                      value: member,
+                      child: StatefulBuilder(
+                        builder: (context, setCbxState) {
+                          return Row(
+                            children: [
+                              Checkbox(
+                                value: _selectedMembers.contains(member),
+                                onChanged: (isSelected) {
+                                  if (isSelected == true) {
+                                    _selectedMembers.add(member);
+                                  } else {
+                                    _selectedMembers.remove(member);
+                                  }
+                                  setCbxState(() {});
+                                  setState(() {});
+                                },
+                              ),
+                              const SizedBox(width: 10),
+                              Text(member.getName()),
+                            ],
+                          );
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ],
+        ),
         actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
           TextButton(
@@ -189,6 +232,9 @@ class GroupDialogState extends State<GroupDialog> {
           ),
           TextButton(
             onPressed: () {
+              setState(() {
+                okPressed = true;
+              });
               if (!_formKey.currentState!.validate()) {
                 return;
               }
@@ -199,9 +245,11 @@ class GroupDialogState extends State<GroupDialog> {
                   widget.groupViewModel.addGroup(newGroup);
                   widget.groupViewModel.addMembers(newGroup, _selectedMembers);
                 } else {
-                  widget.selectedGroup!.setName(_groupNameEditingController.text);
+                  widget.selectedGroup!
+                      .setName(_groupNameEditingController.text);
                   widget.groupViewModel.refreshView();
                 }
+                okPressed = false;
                 _groupNameEditingController.clear();
                 _selectedMembers = [];
                 Navigator.of(context).pop();

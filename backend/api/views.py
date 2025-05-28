@@ -25,6 +25,9 @@ class CreatedTaskViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "create":
             return CreatedTaskCreateSerializer
+        elif self.action == "get":
+            return CreatedTaskCreateSerializer
+        return CreatedTaskSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

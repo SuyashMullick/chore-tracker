@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 class Task {
   late int _id;
-  int? _creatorId;
   late int _points;
   late String _name;
   late Group _group;
@@ -18,7 +17,6 @@ class Task {
       group: Group.fromDTO(task.group),
       points: task.points,
       desc: task.note,
-      creatorId: task.creatorId,
     );
   }
 
@@ -28,23 +26,20 @@ class Task {
       points: task._points,
       name: task._name,
       note: task._desc,
-      creatorId: task._creatorId,
-      group: GroupDTO(
-        id: task._group.getId(),
-        name: task._group.getName(),
-        creatorId: task._creatorId,
-        users: task._group.getMembers().map((user) => UserDTO(id: user.getId(), name: user.getName())).toList(),
-      ),
+      group: Group.toDTO(task._group),
     );
   }
 
-  Task({required name, required Group group, required points, required id, desc, creatorId}) {
+  Task({required String name, required Group group, required points, required id, desc}) {
     _desc = desc;
     _id = id;
     _name = name;
     _group = group;
-    _creatorId = creatorId;
     setPoints(points);
+  }
+
+  void setId(int id) {
+    _id = id;
   }
 
   void setPoints(int points) {
@@ -58,15 +53,15 @@ class Task {
     return _group;
   }
 
-  getPoints() {
+  int getPoints() {
     return _points;
   }
   
-  getDesc() {
+  String? getDesc() {
     return _desc;
   }
 
-  getName() {
+  String getName() {
     return _name;
   }
 }
@@ -84,7 +79,7 @@ class TaskViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  isTaskExisting(String taskName, Group? group) {
+  bool isTaskExisting(String taskName, Group? group) {
     if (group == null) {
       return false;
     }
@@ -96,10 +91,13 @@ class TaskViewModel extends ChangeNotifier {
     return false;
   }
 
-  addTask(Task task) {
+  Future<bool> addTask(Task task) async {
     _tasks.add(task);
-    // task has to be added to db
+    // add task to db
+    bool success = await Service.createTask(task);
     notifyListeners();
+
+    return success;
   }
 
   bool removeTask(Task task) {

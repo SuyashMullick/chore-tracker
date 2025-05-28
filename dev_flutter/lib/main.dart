@@ -28,7 +28,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         scaffoldBackgroundColor: const Color.fromARGB(255, 66, 164, 234),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const SafeArea(
+        child:  MyHomePage(title: 'EqualChores Home Page'),
+      ),
     );
   }
 }
@@ -115,8 +117,8 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Tasks',
           ),
           NavigationDestination(
-            icon: Badge(
-                isLabelVisible: false, child: Icon(Icons.castle_rounded)),
+            icon:
+                Badge(isLabelVisible: false, child: Icon(Icons.castle_rounded)),
             //Icons.castle_rounded
             //Icons.cottage_rounded
             //Icons.group_rounded,
@@ -128,7 +130,8 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Statistics',
           ),
           NavigationDestination(
-            icon: Badge(isLabelVisible: false, child: Icon(Icons.badge_rounded)),
+            icon:
+                Badge(isLabelVisible: false, child: Icon(Icons.badge_rounded)),
             label: 'Profile',
           ),
         ],
