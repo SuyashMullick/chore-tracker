@@ -33,9 +33,8 @@ class PlannedTaskSerializer(ModelSerializer):
 
 
 class CreatedTaskCreateSerializer(serializers.Serializer):
-    id = serializers.PrimaryKeyRelatedField( # it means Group ID
+    group = serializers.PrimaryKeyRelatedField( # it means Group ID
         queryset=Group.objects.all(),
-        source="group"
         )
     task_name = serializers.CharField(max_length=100)
     description = serializers.CharField()
