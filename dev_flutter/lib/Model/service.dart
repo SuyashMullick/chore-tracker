@@ -98,13 +98,22 @@ class TaskDTO {
     );
   }
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'points': points,
-      'task_name': name,
-      'description': note,
-      'group': group.id,
-    };
+    if (id > 0) {
+      return {
+        'id': id,
+        'points': points,
+        'task_name': name,
+        'description': note,
+        'group': group.id,
+      };
+    } else {
+      return {
+        'points': points,
+        'task_name': name,
+        'description': note,
+        'group': group.id,
+      };
+    }
   }
 }
 
