@@ -67,7 +67,6 @@ class UserDTO {
 
 class TaskDTO {
   final int id;
-  final int? creatorId;
   final int points;
   final String name;
   final GroupDTO group;
@@ -79,7 +78,6 @@ class TaskDTO {
     required this.name,
     required this.note,
     required this.group,
-    this.creatorId,
   });
 
   factory TaskDTO.fromJson(Map<String, dynamic> json) {
@@ -88,7 +86,6 @@ class TaskDTO {
       points: json['points'],
       name: json['task_name'],
       note: json['description'],
-      creatorId: json['creatorId'],
       group: GroupDTO(
         // hard coded, temporary
         creatorId: 1,
@@ -107,7 +104,6 @@ class TaskDTO {
       'task_name': name,
       'description': note,
       'group': group.id,
-      'creatorId': creatorId,
     };
   }
 }
@@ -121,7 +117,7 @@ class GroupDTO {
   GroupDTO({
     required this.id,
     required this.name,
-    required this.creatorId,
+    this.creatorId,
     required this.users,
   });
 

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 class Task {
   late int _id;
-  int? _creatorId;
   late int _points;
   late String _name;
   late Group _group;
@@ -18,7 +17,6 @@ class Task {
       group: Group.fromDTO(task.group),
       points: task.points,
       desc: task.note,
-      creatorId: task.creatorId,
     );
   }
 
@@ -28,17 +26,15 @@ class Task {
       points: task._points,
       name: task._name,
       note: task._desc,
-      creatorId: task._creatorId,
       group: Group.toDTO(task._group),
     );
   }
 
-  Task({required String name, required Group group, required points, required id, desc, creatorId}) {
+  Task({required String name, required Group group, required points, required id, desc}) {
     _desc = desc;
     _id = id;
     _name = name;
     _group = group;
-    _creatorId = creatorId;
     setPoints(points);
   }
 

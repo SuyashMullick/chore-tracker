@@ -106,7 +106,12 @@ class User {
   late int _id;
 
   User({required String name, required int id}) {
+    _id = id;
     _name = name;
+  }
+
+  void setId(int id) {
+    _id = id;
   }
 
   int getId() {
@@ -139,19 +144,21 @@ class User {
 
 class Group {
   late final int _id;
-  late final int _creatorId;
+  int? _creatorId;
   late String _name;
   final List<User> _members = [];
 
-  Group({required String name, required int id}) {
+  Group({required String name, required int id, creatorId}) {
     _name = name;
     _id = id;
+    _creatorId = creatorId;
   }
 
-  factory Group.fromDTO(GroupDTO group) {
+  factory Group.fromDTO(GroupDTO groupDTO) {
     return Group(
-      name: group.name,
-      id: group.id,
+      name: groupDTO.name,
+      id: groupDTO.id,
+      creatorId: groupDTO.creatorId,
     );
   }
 
