@@ -10,15 +10,15 @@ class GroupViewModel extends ChangeNotifier {
   }
 
   Future<bool> _loadUsers() async {
-    User user1 = User(username: "User 1", id: 1);
+    User user1 = User(username: "User 1", id: 1, email: "abc@email.com", first_name: "User", last_name: "1", gender: "male");
     _users.add(user1);
-    User user2 = User(username: "User 2", id: 2);
+    User user2 = User(username: "User 2", id: 2, email: "abc@email.com", first_name: "User", last_name: "2", gender: "female");
     _users.add(user2);
-    User user3 = User(username: "User 3", id: 3);
+    User user3 = User(username: "User 3", id: 3, email: "abc@email.com", first_name: "User", last_name: "3", gender: "other");
     _users.add(user3);
-    User user4 = User(username: "User 4", id: 4);
+    User user4 = User(username: "User 4", id: 4, email: "abc@email.com", first_name: "User", last_name: "4", gender: "male");
     _users.add(user4);
-    User user5 = User(username: "User 5", id: 5);
+    User user5 = User(username: "User 5", id: 5, email: "abc@email.com", first_name: "User", last_name: "5", gender: "femmale");
     _users.add(user5);
 
     return true;
@@ -101,14 +101,28 @@ class GroupViewModel extends ChangeNotifier {
   }
 }
 
+enum UserGender {
+  male,
+  female,
+  other
+}
+
 class User {
   late int _id;
-  late final String _name;
+  late final String _username;
+  late String _email;
+  late String _first_name;
+  late String _last_name;
+  late UserGender _gender;
 
 
-  User({required int id, required String username,}) {
+  User({required int id, required String username, required String email, required first_name, required last_name, required gender}) {
     _id = id;
-    _name = username;
+    _username = username;
+    _email = email;
+    _first_name = first_name;
+    _last_name = last_name;
+    _gender = gender;
   }
 
   void setId(int id) {
@@ -119,27 +133,35 @@ class User {
     return _id;
   }
 
-  String getName() {
-    return _name;
+  String getUsername() {
+    return _username;
   }
 
    factory User.fromDTO(UserDTO userDto) {
     return User(
-      username: userDto.name,
       id: userDto.id,
+      username: userDto.username,
+      email: userDto.email,
+      first_name: userDto.firstName,
+      last_name: userDto.lastName,
+      gender: userDto.gender,
     );
   }
 
   static UserDTO toDTO(User user) {
     return UserDTO(
       id: user._id,
-      name: user._name,
+      username: user._username,
+      email: user._email,
+      firstName: user._first_name,
+      lastName: user._last_name,
+      gender: user._gender,
     );
   }
 
   @override
   String toString() {
-    return _name;
+    return _username;
   }
 }
 

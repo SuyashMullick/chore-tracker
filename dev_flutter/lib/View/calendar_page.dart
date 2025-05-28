@@ -333,7 +333,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                                       },
                                     ),
                                     const SizedBox(width: 10),
-                                    Text(member.getName()),
+                                    Text(member.getUsername()),
                                   ],
                                 );
                               },
@@ -354,7 +354,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                     _selectedMembers.isEmpty
                         ? 'Select assignees'
                         : _selectedMembers
-                            .map((user) => user.getName())
+                            .map((user) => user.getUsername())
                             .join(' , '),
                   ),
                 ),
