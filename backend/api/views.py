@@ -41,7 +41,7 @@ class CreatedTaskViewSet(viewsets.ModelViewSet):
                 "group": task.group.id
                 }, status=status.HTTP_201_CREATED
             )
-        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
 
