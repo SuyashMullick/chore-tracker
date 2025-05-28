@@ -4,22 +4,24 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:developer';
 
-//const baseURL = 'http://127.0.0.1:8000/api';
-const baseURL = 'http://10.0.2.2:8000/api'; // for android emulator
+const baseURL = 'http://127.0.0.1:8000/api';
+// const baseURL = 'http://10.0.2.2:8000/api'; // for android emulator
 
 class PlannedTaskDTO {
   final int id;
-  final int points;
   final TaskDTO task;
   final List<UserDTO> assignees;
-  final PlannedTaskStatus status;
+  final UserDTO assigner;
   final DateTime startTime;
+  final int points;
+  final PlannedTaskStatus status;
 
   PlannedTaskDTO({
     required this.id,
     required this.task,
-    required this.points,
     required this.assignees,
+    required this.assigner,
+    required this.points,
     required this.status,
     required this.startTime,
   });
@@ -28,10 +30,11 @@ class PlannedTaskDTO {
     return PlannedTaskDTO(
       id: json['id'],
       task: TaskDTO.fromJson(json['task_template']),
-      points: json['custom_points'],
       assignees: [
-        UserDTO(id: json['assignee_id'], name: "User 1"),
+        UserDTO(id: json['assignee'], name: "User 1"),
       ], // hard coded for now, until backend ready
+      assigner: UserDTO.fromJson(json['assigner']),
+      points: json['custom_points'],
       status: PlannedTaskStatus.values.firstWhere(
         (e) => e.toString() == 'PlannedTaskStatus.${json['state']}',
         orElse: () => PlannedTaskStatus.open,
@@ -164,7 +167,7 @@ class Service {
   }
 
   static Future<List<PlannedTask>> loadCalendarTasks() async {
-    const url = '$baseURL/plannedTasks/';
+    const url = '$baseURL/planned-tasks/';
     try {
       final response = await http.get(Uri.parse(url));
       List<PlannedTask> plannedTasks = [];
@@ -216,7 +219,7 @@ class Service {
   }
 
   static Future<bool> createPlannedTask(PlannedTask plannedTask) async {
-    const url = '$baseURL/plannedTasks/';
+    const url = '$baseURL/planned-tasks/';
 
     try {
       // Convert domain PlannedTask to PlannedTaskDTO and then to JSON
@@ -248,7 +251,7 @@ class Service {
     PlannedTask plannedTask,
     PlannedTaskStatus newStatus,
   ) async {
-    final url = '$baseURL/plannedTasks/${plannedTask.getId()}/';
+    final url = '$baseURL/planned-tasks/${plannedTask.getId()}/';
 
     try {
       // Create update payload

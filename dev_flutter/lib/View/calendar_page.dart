@@ -404,7 +404,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               }
               if (_selectedTask != null) {
                 widget.calendarViewModel.planTask(widget.date, _selectedTask!,
-                    _selectedMembers, _selectedPoints);
+                    _selectedMembers, widget.groupViewModel.getUsers()[0], _selectedPoints); // harcoded user
               }
               okPressed = false;
               _selectedPoints = null;
