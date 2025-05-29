@@ -5,8 +5,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:developer';
 
-const baseURL = 'http://127.0.0.1:8000/api';
-// const baseURL = 'http://10.0.2.2:8000/api'; // for android emulator
+//const baseURL = 'http://127.0.0.1:8000/api';
+const baseURL = 'http://10.0.2.2:8000/api'; // for android emulator
 
 class PlannedTaskDTO {
   final int id;
@@ -51,7 +51,7 @@ class PlannedTaskDTO {
       'task_template': task.toJson(),
       'assignee': assignees.first.toJson(),
       'assigner': assigner,
-      'state': status.toString().split('.').last,
+      'state': status.toString().split('.').last, //status.name
       'start_time': startTime.toIso8601String(),
     };
   }
@@ -257,7 +257,7 @@ class Service {
         }
         return plannedTasks;
       } else {
-        throw Exception('Failed to load tasks');
+        throw Exception('Failed to load planned tasks');
       }
     } catch (e) {
       log('Error: $e');
@@ -266,7 +266,7 @@ class Service {
   }
 
   static Future<bool> createTask(Task task) async {
-    const url = '$baseURL/created-tasks/';
+    const url = '$baseURL/task-template/';
     try {
       // Convert domain Task to TaskDTO and then to JSON
       final TaskDTO taskDTO = Task.toDTO(task);
