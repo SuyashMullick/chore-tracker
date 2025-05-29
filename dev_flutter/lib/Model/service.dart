@@ -193,6 +193,23 @@ class GroupDTO {
 }
 
 class Service {
+  static Future<List<GroupDTO>> fetchGroups() async {
+    const url = '$baseURL/groups/';
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((json) => GroupDTO.fromJson(json)).toList();
+      } else {
+          throw Exception('Failed to load groups');
+      }
+    } catch (e) {
+        log('Error: $e');
+        return [];
+    }
+  }
+  
   static Future<List<Task>> loadTasks() async {
     const url = '$baseURL/task-template/';
     try {

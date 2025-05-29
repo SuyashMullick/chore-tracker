@@ -106,7 +106,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
             maxLength: 20,
             controller: _taskNameEditingController,
             decoration: const InputDecoration(
-              labelText: 'Name of the task',
+              labelText: 'Name',
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -120,7 +120,7 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
           ),
           DropdownButtonFormField<Group>(
             value: _selectedGroup,
-            hint: const Text('Select a group for the task'),
+            hint: const Text('Select a group'),
             items: widget.groupViewModel
                 .getGroups()
                 .map(
@@ -146,13 +146,13 @@ class CreateTaskDialogState extends State<CreateTaskDialog> {
             maxLength: 100,
             controller: _taskDescEditingController,
             decoration: const InputDecoration(
-              labelText: 'Description of the task (optional)',
+              labelText: 'Description (optional)',
             ),
             maxLines: 2,
           ),
           DropdownButtonFormField<int>(
             value: _selectedPoints,
-            hint: const Text('Select the points for the task'),
+            hint: const Text('Points'),
             items: List.generate(
               10,
               (i) {
