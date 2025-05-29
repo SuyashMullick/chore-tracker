@@ -1,5 +1,6 @@
 import 'package:dev_flutter/Model/service.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer';
 
 class GroupViewModel extends ChangeNotifier {
   final List<Group> _groups = [];
@@ -10,42 +11,72 @@ class GroupViewModel extends ChangeNotifier {
   }
 
   Future<bool> _loadUsers() async {
-    User user1 = User(username: "User 1", id: 1, email: "abc@email.com", first_name: "User", last_name: "1", gender: "male");
+    User user1 = User(
+        username: "User 1",
+        id: 1,
+        email: "abc@email.com",
+        firstName: "User",
+        lastName: "1",
+        gender: "male");
     _users.add(user1);
-    User user2 = User(username: "User 2", id: 2, email: "abc@email.com", first_name: "User", last_name: "2", gender: "female");
+    User user2 = User(
+        username: "User 2",
+        id: 2,
+        email: "abc@email.com",
+        firstName: "User",
+        lastName: "2",
+        gender: "female");
     _users.add(user2);
-    User user3 = User(username: "User 3", id: 3, email: "abc@email.com", first_name: "User", last_name: "3", gender: "other");
+    User user3 = User(
+        username: "User 3",
+        id: 3,
+        email: "abc@email.com",
+        firstName: "User",
+        lastName: "3",
+        gender: "other");
     _users.add(user3);
-    User user4 = User(username: "User 4", id: 4, email: "abc@email.com", first_name: "User", last_name: "4", gender: "male");
+    User user4 = User(
+        username: "User 4",
+        id: 4,
+        email: "abc@email.com",
+        firstName: "User",
+        lastName: "4",
+        gender: "male");
     _users.add(user4);
-    User user5 = User(username: "User 5", id: 5, email: "abc@email.com", first_name: "User", last_name: "5", gender: "femmale");
+    User user5 = User(
+        username: "User 5",
+        id: 5,
+        email: "abc@email.com",
+        firstName: "User",
+        lastName: "5",
+        gender: "female");
     _users.add(user5);
 
     return true;
   }
 
   Future<bool> _loadGroups() async {
-    // for test
-    _loadUsers();
-    Group group1 = Group(name: "SweetHome", id: 1);
+    try {
+      final groupDTOs = await Service.fetchGroups();
+      _groups.clear();
+      for (final dto in groupDTOs) {
+        final group = Group.fromDTO(dto);
+        for (final userDTO in dto.users) {
+          final user = User.fromDTO(userDTO);
+          group._addMember(user);
+          if (!_users.any((u) => u.getId() == user.getId())) {
+            _users.add(user);
+          }
+        }
+        _groups.add(group);
+      }
 
-    group1._addMember(_users[0]);
-    group1._addMember(_users[1]);
-    _groups.add(group1);
-
-    Group group2 = Group(name: "Group 2", id: 2);
-    group2._addMember(_users[2]);
-    group2._addMember(_users[1]);
-    _groups.add(group2);
-
-    Group group3 = Group(name: "Group 3", id: 3);
-    group3._addMember(_users[4]);
-    group3._addMember(_users[3]);
-    _groups.add(group3);
-
-    notifyListeners();
-
-    return true;
+      notifyListeners();
+      return true;
+    } catch (e) {
+        log("Error loading groups: $e");
+      return false;
+    }
   }
 
   List<Group> getGroups() {
@@ -101,27 +132,28 @@ class GroupViewModel extends ChangeNotifier {
   }
 }
 
-enum UserGender {
-  male,
-  female,
-  other
-}
+enum UserGender { male, female, other }
 
 class User {
   late int _id;
   late final String _username;
   late String _email;
-  late String _first_name;
-  late String _last_name;
+  late String _firstName;
+  late String _lastName;
   late UserGender _gender;
 
-
-  User({required int id, required String username, required String email, required first_name, required last_name, required gender}) {
+  User(
+      {required int id,
+      required String username,
+      required String email,
+      required firstName,
+      required lastName,
+      required gender}) {
     _id = id;
     _username = username;
     _email = email;
-    _first_name = first_name;
-    _last_name = last_name;
+    _firstName = firstName;
+    _lastName = lastName;
     _gender = gender;
   }
 
@@ -137,13 +169,13 @@ class User {
     return _username;
   }
 
-   factory User.fromDTO(UserDTO userDto) {
+  factory User.fromDTO(UserDTO userDto) {
     return User(
       id: userDto.id,
       username: userDto.username,
       email: userDto.email,
-      first_name: userDto.firstName,
-      last_name: userDto.lastName,
+      firstName: userDto.firstName,
+      lastName: userDto.lastName,
       gender: userDto.gender,
     );
   }
@@ -153,8 +185,8 @@ class User {
       id: user._id,
       username: user._username,
       email: user._email,
-      firstName: user._first_name,
-      lastName: user._last_name,
+      firstName: user._firstName,
+      lastName: user._lastName,
       gender: user._gender,
     );
   }
