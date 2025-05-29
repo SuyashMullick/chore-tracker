@@ -99,7 +99,7 @@ class PlannedTask(models.Model):
     custom_points = models.IntegerField(
         blank=True, null=True,
         validators=[MinValueValidator(1), MaxValueValidator(10)]
-    )
+    ) 
     class StateChoices(models.TextChoices):
         OPEN = 'open', 'Open'
         DONE = 'done', 'Done'

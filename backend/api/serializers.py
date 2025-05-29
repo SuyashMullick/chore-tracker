@@ -31,16 +31,6 @@ class CreatedTaskSerializer(ModelSerializer):
         model = CreatedTask
         fields = '__all__'
 
-class PlannedTaskSerializer(ModelSerializer):
-    task_template = CreatedTaskSerializer(read_only=True)
-    assignee = UserSerializer(read_only=True)
-    assigner = UserSerializer(read_only=True)
-    class Meta:
-        model = PlannedTask
-        fields = '__all__'
-
-
-
 class CreatedTaskCreateSerializer(serializers.Serializer):
     group = serializers.PrimaryKeyRelatedField( # it means Group ID
         queryset=Group.objects.all(),
@@ -56,3 +46,11 @@ class CreatedTaskCreateSerializer(serializers.Serializer):
             description=validated_data["description"],
             points=validated_data["points"],
         )
+
+class PlannedTaskSerializer(ModelSerializer):
+    task_template = CreatedTaskSerializer(read_only=True)
+    assignee = UserSerializer(read_only=True)
+    assigner = UserSerializer(read_only=True)
+    class Meta:
+        model = PlannedTask
+        fields = '__all__'
