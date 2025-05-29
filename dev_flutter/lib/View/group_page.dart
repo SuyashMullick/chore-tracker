@@ -67,7 +67,7 @@ class GroupPageState extends State<GroupPage> {
                           .map(
                             (member) => ListTile(
                               leading: const Icon(Icons.person),
-                              title: Text(member.getName()),
+                              title: Text(member.getUsername()),
                               trailing: IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () =>
@@ -184,7 +184,7 @@ class GroupDialogState extends State<GroupDialog> {
                     _selectedMembers.isEmpty
                         ? 'Select members'
                         : _selectedMembers
-                            .map((user) => user.getName())
+                            .map((user) => user.getUsername())
                             .join(' , '),
                   ),
                 ),
@@ -210,7 +210,7 @@ class GroupDialogState extends State<GroupDialog> {
                                 },
                               ),
                               const SizedBox(width: 10),
-                              Text(member.getName()),
+                              Text(member.getUsername()),
                             ],
                           );
                         },

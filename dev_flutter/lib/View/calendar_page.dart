@@ -333,7 +333,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                                       },
                                     ),
                                     const SizedBox(width: 10),
-                                    Text(member.getName()),
+                                    Text(member.getUsername()),
                                   ],
                                 );
                               },
@@ -354,7 +354,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
                     _selectedMembers.isEmpty
                         ? 'Select assignees'
                         : _selectedMembers
-                            .map((user) => user.getName())
+                            .map((user) => user.getUsername())
                             .join(' , '),
                   ),
                 ),
@@ -404,7 +404,7 @@ class CreateTaskDialogState extends State<PlanTaskDialog> {
               }
               if (_selectedTask != null) {
                 widget.calendarViewModel.planTask(widget.date, _selectedTask!,
-                    _selectedMembers, _selectedPoints);
+                    _selectedMembers, widget.groupViewModel.getUsers()[0], _selectedPoints); // harcoded user
               }
               okPressed = false;
               _selectedPoints = null;
