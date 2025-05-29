@@ -48,6 +48,7 @@ class PlannedTaskDTO {
       'points': points,
       'task_template': task,
       'assignees': jsonEncode(assignees.map((u) => u.toJson()).toList()),
+      'assigner': assigner,
       'state': status.toString().split('.').last,
       'start_time': startTime,
     };
