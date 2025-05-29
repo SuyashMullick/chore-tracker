@@ -194,7 +194,7 @@ class GroupDTO {
 
 class Service {
   static Future<List<Task>> loadTasks() async {
-    const url = '$baseURL/created-tasks/';
+    const url = '$baseURL/task-template/';
     try {
       final response = await http.get(Uri.parse(url));
       List<Task> tasks = [];

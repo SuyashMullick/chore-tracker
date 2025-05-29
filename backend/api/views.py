@@ -1,11 +1,10 @@
 from rest_framework import viewsets
-from .serializers import UserSerializer, GroupSerializer, GroupMembershipSerializer, CreatedTaskSerializer, PlannedTaskSerializer
-
+from .serializers import UserSerializer, GroupSerializer, GroupMembershipSerializer, TaskTemplateCreateSerializer, TaskTemplateSerializer, PlannedTaskSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from .services import create_created_task
 from .models import User, Group, GroupMembership, CreatedTask, PlannedTask
-from .serializers import CreatedTaskCreateSerializer
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -19,15 +18,14 @@ class GroupMembershipViewSet(viewsets.ModelViewSet):
     queryset = GroupMembership.objects.all()
     serializer_class = GroupMembershipSerializer
 
-class CreatedTaskViewSet(viewsets.ModelViewSet):
+class TaskTemplateViewSet(viewsets.ModelViewSet):
     queryset = CreatedTask.objects.all()
-    # serializer_class = CreatedTaskSerializer
     def get_serializer_class(self):
         if self.action == "create":
-            return CreatedTaskCreateSerializer
-        elif self.action == "get":
-            return CreatedTaskCreateSerializer
-        return CreatedTaskSerializer
+            return TaskTemplateCreateSerializer
+        elif self.action == "list" or "retrieve":
+            return TaskTemplateSerializer
+        return TaskTemplateSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
