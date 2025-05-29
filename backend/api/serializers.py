@@ -25,14 +25,14 @@ class GroupMembershipSerializer(ModelSerializer):
         model = GroupMembership
         fields = '__all__'
 
-class CreatedTaskSerializer(ModelSerializer):
+class TaskTemplateSerializer(ModelSerializer): # To present the tasks from back to front
     group = GroupSerializer(read_only=True)
     class Meta:
         model = CreatedTask
         fields = '__all__'
 
-class CreatedTaskCreateSerializer(serializers.Serializer):
-    group = serializers.PrimaryKeyRelatedField( # it means Group ID
+class TaskTemplateCreateSerializer(serializers.Serializer): # To store the tasks from front to back
+    group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all(),
         )
     task_name = serializers.CharField(max_length=100)
@@ -48,7 +48,7 @@ class CreatedTaskCreateSerializer(serializers.Serializer):
         )
 
 class PlannedTaskSerializer(ModelSerializer):
-    task_template = CreatedTaskSerializer(read_only=True)
+    task_template = TaskTemplateSerializer(read_only=True)
     assignee = UserSerializer(read_only=True)
     assigner = UserSerializer(read_only=True)
     class Meta:
