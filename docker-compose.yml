@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  flutter:
+    build:
+      context: ./dev_flutter
+    volumes:
+      - ./dev_flutter:/app
+      - ./backend/db.sqlite3:/app/database/db.sqlite3
+    working_dir: /app
+    environment:
+      - DATABASE_PATH=/app/database/db.sqlite3
+    depends_on:
+      - backend
+    # Development: keep shell access for flexibility
+    command: ["/bin/bash"]
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    working_dir: /app
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
