@@ -1,4 +1,5 @@
 import 'package:dev_flutter/ViewModel/calendar_viewmodel.dart';
+import 'package:dev_flutter/ViewModel/group_viewmodel.dart';
 import 'package:dev_flutter/ViewModel/task_viewmodel.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -31,41 +32,78 @@ class PlannedTaskDTO {
       id: json['id'],
       task: TaskDTO.fromJson(json['task_template']),
       assignees: [
-        UserDTO(id: json['assignee'], name: "User 1"),
-      ], // hard coded for now, until backend ready
+        UserDTO.fromJson(json['assignee'])
+        // UserDTO(id: json['assignee'], username: "User 1", email:  "abc@email.com", first_name: "User", last_name: "1", gender: UserGender.other),
+      ],
       assigner: UserDTO.fromJson(json['assigner']),
       points: json['custom_points'],
       status: PlannedTaskStatus.values.firstWhere(
         (e) => e.toString() == 'PlannedTaskStatus.${json['state']}',
         orElse: () => PlannedTaskStatus.open,
       ),
-      startTime: json['start_time'],
+      startTime: DateTime.parse(json['start_time']),
     );
   }
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'points': points,
-      'task_template': task,
-      'assignees': jsonEncode(assignees.map((u) => u.toJson()).toList()),
+      'task_template': task.toJson(),
+      'assignee': assignees.first.toJson(),
       'assigner': assigner,
       'state': status.toString().split('.').last,
-      'start_time': startTime,
+      'start_time': startTime.toIso8601String(),
     };
   }
 }
 
 class UserDTO {
   final int id;
-  final String name;
+  final String username;
+  final String email;
+  final String firstName;
+  final String lastName;
+  final UserGender gender;
 
-  UserDTO({required this.id, required this.name});
+  UserDTO(
+      {required this.id,
+      required this.username,
+      required this.email,
+      required this.firstName,
+      required this.lastName,
+      required this.gender});
 
   factory UserDTO.fromJson(Map<String, dynamic> json) {
-    return UserDTO(id: json['id'], name: json['name']);
+    return UserDTO(
+      id: json['id'],
+      username: json['username'],
+      email: json['email'],
+      firstName: json['first_name'],
+      lastName: json['last_name'],
+      gender: _parseGender(json['gender']),
+    );
   }
+
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name};
+    return {
+      'id': id,
+      'username': username,
+      'email': email,
+      'first_name': firstName,
+      'last_name': lastName,
+      'gender': gender.name,
+    };
+  }
+
+  static UserGender _parseGender(String gender) {
+    switch (gender.toLowerCase()) {
+      case 'male':
+        return UserGender.male;
+      case 'female':
+        return UserGender.female;
+      default:
+        return UserGender.other;
+    }
   }
 }
 
@@ -90,13 +128,22 @@ class TaskDTO {
       points: json['points'],
       name: json['task_name'],
       note: json['description'],
-      group: GroupDTO(
-        // hard coded, temporary
-        creatorId: 1,
-        name: "SweetHome",
-        id: json['group'],
-        users: [UserDTO(id: 1, name: 'User1')],
-      ),
+      group: GroupDTO.fromJson(json['group']),
+      // group: GroupDTO(
+      //   // hard coded, temporary
+      //   creatorId: 1,
+      //   name: "SweetHome",
+      //   id: json['group'],
+      //   users: [
+      //     UserDTO(
+      //         id: 1,
+      //         username: 'User1',
+      //         email: 'abc@email.com',
+      //         firstName: 'User',
+      //         lastName: '1',
+      //         gender: UserGender.other)
+      //   ],
+      // ),
       //json['members']),
       //GroupDTO.fromJson(json['group']),
     );
@@ -129,8 +176,10 @@ class GroupDTO {
     return GroupDTO(
       id: json['id'],
       name: json['group_name'],
-      creatorId: json['creator_id'],
-      users: json['members'].map((json) => UserDTO.fromJson(json)).toList(),
+      creatorId: json['creator'],
+      users: (json['users'] as List)
+          .map((json) => UserDTO.fromJson(json))
+          .toList(),
     );
   }
   Map<String, dynamic> toJson() {

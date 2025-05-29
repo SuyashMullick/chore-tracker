@@ -11,9 +11,14 @@ class UserSerializer(ModelSerializer):
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'gender']
 
 class GroupSerializer(ModelSerializer):
+    users = serializers.SerializerMethodField()
     class Meta:
         model = Group
         fields = '__all__'
+    
+    def get_users(self, obj):
+        members = GroupMembership.objects.filter(group=obj).select_related('user')
+        return UserSerializer([m.user for m in members], many=True).data
 
 class GroupMembershipSerializer(ModelSerializer):
     class Meta:
@@ -21,19 +26,10 @@ class GroupMembershipSerializer(ModelSerializer):
         fields = '__all__'
 
 class CreatedTaskSerializer(ModelSerializer):
+    group = GroupSerializer(read_only=True)
     class Meta:
         model = CreatedTask
         fields = '__all__'
-
-class PlannedTaskSerializer(ModelSerializer):
-    task_template = CreatedTaskSerializer(read_only=True)
-    assignee = UserSerializer(read_only=True)
-    assigner = UserSerializer(read_only=True)
-    class Meta:
-        model = PlannedTask
-        fields = '__all__'
-
-
 
 class CreatedTaskCreateSerializer(serializers.Serializer):
     group = serializers.PrimaryKeyRelatedField( # it means Group ID
@@ -50,3 +46,11 @@ class CreatedTaskCreateSerializer(serializers.Serializer):
             description=validated_data["description"],
             points=validated_data["points"],
         )
+
+class PlannedTaskSerializer(ModelSerializer):
+    task_template = CreatedTaskSerializer(read_only=True)
+    assignee = UserSerializer(read_only=True)
+    assigner = UserSerializer(read_only=True)
+    class Meta:
+        model = PlannedTask
+        fields = '__all__'
