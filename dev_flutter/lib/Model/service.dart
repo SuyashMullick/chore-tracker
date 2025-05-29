@@ -50,7 +50,7 @@ class PlannedTaskDTO {
       'task_template': task.toJson(),
       'assignee': assignees.first.toJson(),
       'assigner': assigner,
-      'state': status.toString().split('.').last,
+      'state': status.toString().split('.').last, //status.name
       'start_time': startTime.toIso8601String(),
     };
   }
@@ -131,13 +131,22 @@ class TaskDTO {
     );
   }
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'points': points,
-      'task_name': name,
-      'description': note,
-      'group': group.id,
-    };
+    if (id > 0) {
+      return {
+        'id': id,
+        'points': points,
+        'task_name': name,
+        'description': note,
+        'group': group.id,
+      };
+    } else {
+      return {
+        'points': points,
+        'task_name': name,
+        'description': note,
+        'group': group.id,
+      };
+    }
   }
 }
 
@@ -230,7 +239,7 @@ class Service {
         }
         return plannedTasks;
       } else {
-        throw Exception('Failed to load tasks');
+        throw Exception('Failed to load planned tasks');
       }
     } catch (e) {
       log('Error: $e');
@@ -239,7 +248,7 @@ class Service {
   }
 
   static Future<bool> createTask(Task task) async {
-    const url = '$baseURL/created-tasks/';
+    const url = '$baseURL/task-template/';
     try {
       // Convert domain Task to TaskDTO and then to JSON
       final TaskDTO taskDTO = Task.toDTO(task);
