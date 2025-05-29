@@ -75,7 +75,7 @@ class GroupMembership(models.Model):
         return f"{self.user.username} in {self.group.group_name}"
 
 
-class CreatedTask(models.Model):   
+class CreatedTask(models.Model): 
     group = models.ForeignKey(Group, related_name="tasks_created", on_delete=models.CASCADE)
     task_name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)

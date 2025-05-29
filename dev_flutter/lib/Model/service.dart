@@ -5,8 +5,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:developer';
 
-const baseURL = 'http://127.0.0.1:8000/api';
-// const baseURL = 'http://10.0.2.2:8000/api'; // for android emulator
+// const baseURL = 'http://127.0.0.1:8000/api';
+const baseURL = 'http://10.0.2.2:8000/api'; // for android emulator
 
 class PlannedTaskDTO {
   final int id;
@@ -33,7 +33,6 @@ class PlannedTaskDTO {
       task: TaskDTO.fromJson(json['task_template']),
       assignees: [
         UserDTO.fromJson(json['assignee'])
-        // UserDTO(id: json['assignee'], username: "User 1", email:  "abc@email.com", first_name: "User", last_name: "1", gender: UserGender.other),
       ],
       assigner: UserDTO.fromJson(json['assigner']),
       points: json['custom_points'],
@@ -51,7 +50,7 @@ class PlannedTaskDTO {
       'task_template': task.toJson(),
       'assignee': assignees.first.toJson(),
       'assigner': assigner,
-      'state': status.toString().split('.').last,
+      'state': status.toString().split('.').last, //status.name
       'start_time': startTime.toIso8601String(),
     };
   }
@@ -129,33 +128,25 @@ class TaskDTO {
       name: json['task_name'],
       note: json['description'],
       group: GroupDTO.fromJson(json['group']),
-      // group: GroupDTO(
-      //   // hard coded, temporary
-      //   creatorId: 1,
-      //   name: "SweetHome",
-      //   id: json['group'],
-      //   users: [
-      //     UserDTO(
-      //         id: 1,
-      //         username: 'User1',
-      //         email: 'abc@email.com',
-      //         firstName: 'User',
-      //         lastName: '1',
-      //         gender: UserGender.other)
-      //   ],
-      // ),
-      //json['members']),
-      //GroupDTO.fromJson(json['group']),
     );
   }
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'points': points,
-      'task_name': name,
-      'description': note,
-      'group': group.id,
-    };
+    if (id > 0) {
+      return {
+        'id': id,
+        'points': points,
+        'task_name': name,
+        'description': note,
+        'group': group.id,
+      };
+    } else {
+      return {
+        'points': points,
+        'task_name': name,
+        'description': note,
+        'group': group.id,
+      };
+    }
   }
 }
 
@@ -248,7 +239,7 @@ class Service {
         }
         return plannedTasks;
       } else {
-        throw Exception('Failed to load tasks');
+        throw Exception('Failed to load planned tasks');
       }
     } catch (e) {
       log('Error: $e');

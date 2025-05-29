@@ -241,9 +241,8 @@ class GroupDialogState extends State<GroupDialog> {
               if (_groupNameEditingController.text.isNotEmpty) {
                 if (widget.selectedGroup == null) {
                   final Group newGroup =
-                      Group(name: _groupNameEditingController.text, id: 0);
+                      Group(name: _groupNameEditingController.text, id: 0, members: _selectedMembers);
                   widget.groupViewModel.addGroup(newGroup);
-                  widget.groupViewModel.addMembers(newGroup, _selectedMembers);
                 } else {
                   widget.selectedGroup!
                       .setName(_groupNameEditingController.text);

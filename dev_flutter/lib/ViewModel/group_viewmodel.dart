@@ -10,51 +10,6 @@ class GroupViewModel extends ChangeNotifier {
     _loadGroups();
   }
 
-  Future<bool> _loadUsers() async {
-    User user1 = User(
-        username: "User 1",
-        id: 1,
-        email: "abc@email.com",
-        firstName: "User",
-        lastName: "1",
-        gender: "male");
-    _users.add(user1);
-    User user2 = User(
-        username: "User 2",
-        id: 2,
-        email: "abc@email.com",
-        firstName: "User",
-        lastName: "2",
-        gender: "female");
-    _users.add(user2);
-    User user3 = User(
-        username: "User 3",
-        id: 3,
-        email: "abc@email.com",
-        firstName: "User",
-        lastName: "3",
-        gender: "other");
-    _users.add(user3);
-    User user4 = User(
-        username: "User 4",
-        id: 4,
-        email: "abc@email.com",
-        firstName: "User",
-        lastName: "4",
-        gender: "male");
-    _users.add(user4);
-    User user5 = User(
-        username: "User 5",
-        id: 5,
-        email: "abc@email.com",
-        firstName: "User",
-        lastName: "5",
-        gender: "female");
-    _users.add(user5);
-
-    return true;
-  }
-
   Future<bool> _loadGroups() async {
     try {
       final groupDTOs = await Service.fetchGroups();
@@ -74,7 +29,7 @@ class GroupViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-        log("Error loading groups: $e");
+      log("Error loading groups: $e");
       return false;
     }
   }
@@ -195,6 +150,15 @@ class User {
   String toString() {
     return _username;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is User &&
+      other.runtimeType == runtimeType &&
+      other._id == _id;
+
+  @override
+  int get hashCode => _id.hashCode;
 }
 
 class Group {
@@ -203,18 +167,28 @@ class Group {
   late String _name;
   final List<User> _members = [];
 
-  Group({required String name, required int id, creatorId}) {
+  Group(
+      {required String name,
+      required int id,
+      required List<User> members,
+      creatorId}) {
     _name = name;
     _id = id;
     _creatorId = creatorId;
+    for (User member in members) {
+      if (!_members.contains(member)) {
+        _members.add(member);
+      }
+    }
   }
 
-  factory Group.fromDTO(GroupDTO groupDTO) {
+  factory Group.fromDTO(GroupDTO groupDto) {
     return Group(
-      name: groupDTO.name,
-      id: groupDTO.id,
-      creatorId: groupDTO.creatorId,
-    );
+        name: groupDto.name,
+        id: groupDto.id,
+        creatorId: groupDto.creatorId,
+        members:
+            groupDto.users.map((userDto) => User.fromDTO(userDto)).toList());
   }
 
   static GroupDTO toDTO(Group group) {
@@ -263,4 +237,13 @@ class Group {
   String getName() {
     return _name;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is Group &&
+      other.runtimeType == runtimeType &&
+      other._id == _id;
+
+  @override
+  int get hashCode => _id.hashCode;
 }
