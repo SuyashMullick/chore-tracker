@@ -257,7 +257,7 @@ class Service {
   }
 
   static Future<bool> createTask(Task task) async {
-    const url = '$baseURL/created-tasks/';
+    const url = '$baseURL/task-template/';
     try {
       // Convert domain Task to TaskDTO and then to JSON
       final TaskDTO taskDTO = Task.toDTO(task);

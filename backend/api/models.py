@@ -78,7 +78,7 @@ class GroupMembership(models.Model):
 class CreatedTask(models.Model):   
     group = models.ForeignKey(Group, related_name="tasks_created", on_delete=models.CASCADE)
     task_name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     points = models.IntegerField(
         default=1,
         validators=[MinValueValidator(1), MaxValueValidator(10)]
@@ -92,7 +92,7 @@ class CreatedTask(models.Model):
         return self.task_name
 
 class PlannedTask(models.Model):
-    task_template = models.ForeignKey(CreatedTask, on_delete=models.CASCADE, related_name="tasks_planned_group")
+    task_template = models.ForeignKey(CreatedTask, on_delete=models.CASCADE, related_name="planned_tasks")
     start_time = models.DateTimeField(default=timezone.now)
     assignee = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_planned_person")
     assigner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_delivered_person')
@@ -113,7 +113,7 @@ class PlannedTask(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['task_template', 'start_time'], name='unique_task_assignment_per_time')
+            models.UniqueConstraint(fields=['task_template', 'start_time', 'assignee'], name='unique_task_per_time_per_person')
         ]
         ordering = ['-start_time']
 

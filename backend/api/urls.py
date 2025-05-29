@@ -5,7 +5,7 @@ from .views import UserViewSet, GroupViewSet, TaskTemplateViewSet, PlannedTaskVi
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'groups', GroupViewSet)
-router.register(r'task-template', TaskTemplateViewSet)
+router.register(r'task-template', TaskTemplateViewSet) # including task creation and display
 router.register(r'planned-tasks', PlannedTaskViewSet)
 
 
