@@ -24,6 +24,7 @@ class CalendarViewModel extends ChangeNotifier {
   }
 
   void updateStatusOfTask(PlannedTask plannedTask, PlannedTaskStatus status) {
+    Service.updatePlannedTaskState(plannedTask, status);
     plannedTask.setStatus(status);
 
     notifyListeners();
@@ -34,7 +35,7 @@ class CalendarViewModel extends ChangeNotifier {
       _tasks[date] = [];
     }
     PlannedTask plannedTask = PlannedTask(
-        startTime: date, task: task, assignees: assignees, assigner: assigner, points: points);
+      id: 0, startTime: date, task: task, assignees: assignees, assigner: assigner, points: points);
     _tasks[date]?.add(plannedTask);
 
     notifyListeners();
@@ -113,6 +114,7 @@ class PlannedTask {
 
   factory PlannedTask.fromDTO(PlannedTaskDTO plannedtaskDTO) {
     return PlannedTask(
+      id: plannedtaskDTO.id,
       assignees: plannedtaskDTO.assignees.map((userDto) => User.fromDTO(userDto)).toList() ,
       assigner: User.fromDTO(plannedtaskDTO.assigner),
       task: Task.fromDTO(plannedtaskDTO.task),
@@ -136,12 +138,14 @@ class PlannedTask {
   }
 
   PlannedTask(
-      {required List<User> assignees,
+      {required int id,
+      required List<User> assignees,
       required assigner,
       required Task task,
       required int points,
       required DateTime startTime,
       status}) {
+    _id = id;
     _task = task;
     _assignees = assignees;
     _points = points;
