@@ -29,7 +29,7 @@ class GroupViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-        log("Error loading groups: $e");
+      log("Error loading groups: $e");
       return false;
     }
   }
@@ -150,6 +150,15 @@ class User {
   String toString() {
     return _username;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is User &&
+      other.runtimeType == runtimeType &&
+      other._id == _id;
+
+  @override
+  int get hashCode => _id.hashCode;
 }
 
 class Group {
@@ -158,18 +167,28 @@ class Group {
   late String _name;
   final List<User> _members = [];
 
-  Group({required String name, required int id, creatorId}) {
+  Group(
+      {required String name,
+      required int id,
+      required List<User> members,
+      creatorId}) {
     _name = name;
     _id = id;
     _creatorId = creatorId;
+    for (User member in members) {
+      if (!_members.contains(member)) {
+        _members.add(member);
+      }
+    }
   }
 
-  factory Group.fromDTO(GroupDTO groupDTO) {
+  factory Group.fromDTO(GroupDTO groupDto) {
     return Group(
-      name: groupDTO.name,
-      id: groupDTO.id,
-      creatorId: groupDTO.creatorId,
-    );
+        name: groupDto.name,
+        id: groupDto.id,
+        creatorId: groupDto.creatorId,
+        members:
+            groupDto.users.map((userDto) => User.fromDTO(userDto)).toList());
   }
 
   static GroupDTO toDTO(Group group) {
@@ -218,4 +237,13 @@ class Group {
   String getName() {
     return _name;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is Group &&
+      other.runtimeType == runtimeType &&
+      other._id == _id;
+
+  @override
+  int get hashCode => _id.hashCode;
 }
