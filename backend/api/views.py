@@ -75,16 +75,3 @@ class PlannedTaskViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-        
-    # def partial_update(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     new_state = request.data.get("state")
-        
-    #     if not new_state:
-    #         return Response({"error": "State field is required"}, status=status.HTTP_400_BAD_REQUEST)
-    #     instance.state = new_state
-    #     instance.save()
-    #     serializer = self.get_serializer(instance)
-    #     return Response(serializer.data)
-

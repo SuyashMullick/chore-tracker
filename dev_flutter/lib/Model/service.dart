@@ -45,11 +45,10 @@ class PlannedTaskDTO {
   }
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'points': points,
-      'task_template': task.toJson(),
-      'assignee': assignees.first.toJson(),
-      'assigner': assigner,
+      'custom_points': points,
+      'task_template': task.id,
+      'assignee': assignees.first.id,
+      'assigner': assigner.id,
       'state': status.toString().split('.').last, //status.name
       'start_time': startTime.toIso8601String(),
     };
@@ -278,7 +277,6 @@ class Service {
 
   static Future<bool> createPlannedTask(PlannedTask plannedTask) async {
     const url = '$baseURL/planned-tasks/';
-
     try {
       // Convert domain PlannedTask to PlannedTaskDTO and then to JSON
       final PlannedTaskDTO plannedTaskDTO = PlannedTask.toDTO(plannedTask);
@@ -290,7 +288,6 @@ class Service {
         headers: {'Content-Type': 'application/json'},
         body: json.encode(plannedTaskJson),
       );
-
       // Check response status
       if (response.statusCode == 201) {
         return true;
@@ -321,7 +318,6 @@ class Service {
         headers: {'Content-Type': 'application/json'},
         body: json.encode(updateData),
       );
-
       // Check response status
       if (response.statusCode == 200) {
         return true;
