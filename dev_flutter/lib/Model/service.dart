@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:developer';
 
 const baseURL = 'http://127.0.0.1:8000/api';
-// const baseURL = 'http://10.0.2.2:8000/api'; // for android emulator
+//const baseURL = 'http://10.0.2.2:8000/api'; // for android emulator
 
 class PlannedTaskDTO {
   final int id;
