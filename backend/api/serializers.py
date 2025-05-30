@@ -43,7 +43,7 @@ class TaskTemplateCreateSerializer(serializers.Serializer):
         return create_created_task(
             group=validated_data["group"],
             task_name=validated_data["task_name"],
-            description=validated_data["description"],
+            description=validated_data.get("description", ""),
             points=validated_data["points"],
         )
 

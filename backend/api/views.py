@@ -28,19 +28,19 @@ class TaskTemplateViewSet(viewsets.ModelViewSet):
             return TaskTemplateDisplaySerializer
         return TaskTemplateDisplaySerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            task = serializer.save()
-            return Response(
-                {
-                "id": task.id,
-                "task_name": task.task_name,
-                "points": task.points,
-                "group": task.group.id
-                }, status=status.HTTP_201_CREATED
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     if serializer.is_valid():
+    #         task = serializer.save()
+    #         return Response(
+    #             {
+    #             "id": task.id,
+    #             "task_name": task.task_name,
+    #             "points": task.points,
+    #             "group": task.group.id
+    #             }, status=status.HTTP_201_CREATED
+    #         )
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PlannedTaskViewSet(viewsets.ModelViewSet):
     queryset = PlannedTask.objects.all()
