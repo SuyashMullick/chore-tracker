@@ -3,7 +3,6 @@ from rest_framework.exceptions import ValidationError
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from .models import User, Group, GroupMembership, CreatedTask, PlannedTask, User
-from .services import create_created_task
 
 class UserSerializer(ModelSerializer):
     class Meta:
@@ -38,25 +37,7 @@ class TaskTemplateCreateSerializer(serializers.Serializer):
     task_name = serializers.CharField(max_length=100)
     description = serializers.CharField(required=False, allow_blank=True)
     points = serializers.IntegerField(min_value=1, max_value=10)
-
-    def create(self, validated_data):
-        return create_created_task(
-            group=validated_data["group"],
-            task_name=validated_data["task_name"],
-            description=validated_data.get("description", ""),
-            points=validated_data["points"],
-        )
-    # def validate(self, attrs):
-    #     group = attrs['group']
-    #     task_name = attrs['task_name']
-    #     if CreatedTask.objects.filter(group=group, task_name=task_name).exists():
-    #         raise ValidationError("Task with this name already exists in this group")
-    #     return attrs
-
-    # def create(self, validated_data):
-    #     return CreatedTask.objects.create(**validated_data)
     
-
 class PlannedTaskDisplaySerializer(ModelSerializer):
     task_template = TaskTemplateDisplaySerializer(read_only=True)
     assignee = UserSerializer(read_only=True)
@@ -72,13 +53,7 @@ class PlannedTaskCreateSerializer(serializers.Serializer):
     state = serializers.ChoiceField(choices=PlannedTask.StateChoices)
     custom_points = serializers.IntegerField(required=False, min_value=1, max_value=10)
     start_time = serializers.DateTimeField()
-    def validate(self, attrs):
-        if attrs['assignee'] == attrs['assigner']:
-            raise ValidationError("Assignee and assigner cannot be the same user.")
-        return attrs
 
-    def create(self, validated_data):
-        return PlannedTask.objects.create(**validated_data)
     
 class PlannedTaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
