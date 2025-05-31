@@ -10,56 +10,67 @@ class ProfilePage extends StatefulWidget {
 class ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    return const Card(
-    shadowColor: Colors.transparent,
-    margin: EdgeInsets.all(8.0),
-    child: SizedBox.expand(
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage('assets/profile.png'),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'User ID: user123',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Gender: Female',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    SizedBox(height: 4),
-                    Text('Individual\n40 pts', textAlign: TextAlign.center),
-                  ],
+    return Card(
+      color: Color(0xB2FFFFFF),
+      shadowColor: Colors.transparent,
+      margin: EdgeInsets.all(8.0),
+      child: SizedBox.expand(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                  shape: BoxShape.circle,
                 ),
-                SizedBox(width: 40),
-                Column(
-                  children: [
-                    SizedBox(height: 4),
-                    Text('Teamwork\n25 pts', textAlign: TextAlign.center),
-                  ],
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('assets/profile2.jpeg'),
                 ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Total Points: 65',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepPurple),
-            ),
-          ],
+              ),
+              SizedBox(height: 16),
+              Text(
+                'User Name: Alice',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Gender: Female',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      SizedBox(height: 4),
+                      Text('Individual\n180 pts', textAlign: TextAlign.center),
+                    ],
+                  ),
+                  SizedBox(width: 40),
+                  Column(
+                    children: [
+                      SizedBox(height: 4),
+                      Text('Teamwork\n120 pts', textAlign: TextAlign.center),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Total Points: 300',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
