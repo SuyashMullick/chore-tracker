@@ -30,20 +30,34 @@ class CalendarViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> planTask(DateTime date, Task task, List<User> assignees, User assigner, points) async {
+  Future<void> planTask(DateTime date, Task task, List<User> assignees,
+      User assigner, points) async {
     if (_tasks[date] == null) {
       _tasks[date] = [];
     }
-    PlannedTask plannedTask = PlannedTask(
-      id: 0, startTime: date, task: task, assignees: assignees, assigner: assigner, points: points);
-    _tasks[date]?.add(plannedTask);
+    PlannedTask tempPlannedTask = PlannedTask(
+        id: 0, // temp ID
+        startTime: date,
+        task: task,
+        assignees: assignees,
+        assigner: assigner,
+        points: points);
+
+    _tasks[date]?.add(tempPlannedTask);
     notifyListeners();
-    bool success = await Service.createPlannedTask(plannedTask);
-    if (!success) {
-      _tasks[date]?.remove(plannedTask);
+
+    PlannedTask? savedPlannedTask =
+        await Service.createPlannedTask(tempPlannedTask);
+    if (savedPlannedTask == null) {
+      _tasks[date]?.remove(tempPlannedTask);
       notifyListeners();
+      return;
     }
-}
+
+    int index = _tasks[date]!.indexOf(tempPlannedTask);
+    _tasks[date]![index] = savedPlannedTask;
+    notifyListeners();
+  }
 
   void removeTask(DateTime date, PlannedTask task) {
     if (_tasks[date] == null) {
@@ -59,11 +73,6 @@ class CalendarViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadCalendar() async {
-    // GroupViewModel groupViewModel = GroupViewModel();
-    // List<Group> groups = groupViewModel.getGroups();
-    // Group group1 = groups[0];
-    // Group group2 = groups[1];
-
     List<PlannedTask> plannedTasks = await Service.loadCalendarTasks();
     for (PlannedTask plannedTask in plannedTasks) {
       if (_tasks[plannedTask._startTime] == null) {
@@ -71,31 +80,6 @@ class CalendarViewModel extends ChangeNotifier {
       }
       _tasks[plannedTask._startTime]?.add(plannedTask);
     }
-
-    // DateTime today =
-    //     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    // planTask(
-    //     today.add(const Duration(days: 1)),
-    //     Task(name: "Vacuum cleaning", points: 1, group: group1),
-    //     [User(name: "user123")],
-    //     2);
-    // planTask(today, Task(name: "Cooking", points: 1, group: group1),
-    //     [User(name: "user123")], 3);
-    // planTask(
-    //     today.subtract(const Duration(days: 3)),
-    //     Task(name: "Feed the cat", points: 2, group: group1),
-    //     [User(name: "user123")],
-    //     6);
-    // planTask(
-    //     today.subtract(const Duration(days: 3)),
-    //     Task(name: "Send invitations for birthday", points: 10, group: group2),
-    //     [User(name: "user123")],
-    //     3);
-    // planTask(
-    //     today.subtract(const Duration(days: 3)),
-    //     Task(name: "Drive kids to school", points: 1, group: group1),
-    //     [User(name: "user1")],
-    //     1);
 
     notifyListeners();
   }
@@ -119,7 +103,9 @@ class PlannedTask {
   factory PlannedTask.fromDTO(PlannedTaskDTO plannedtaskDTO) {
     return PlannedTask(
       id: plannedtaskDTO.id,
-      assignees: plannedtaskDTO.assignees.map((userDto) => User.fromDTO(userDto)).toList() ,
+      assignees: plannedtaskDTO.assignees
+          .map((userDto) => User.fromDTO(userDto))
+          .toList(),
       assigner: User.fromDTO(plannedtaskDTO.assigner),
       task: Task.fromDTO(plannedtaskDTO.task),
       points: plannedtaskDTO.points,
