@@ -275,7 +275,7 @@ class Service {
     }
   }
 
-  static Future<bool> createPlannedTask(PlannedTask plannedTask) async {
+  static Future<PlannedTask?> createPlannedTask(PlannedTask plannedTask) async {
     const url = '$baseURL/planned-tasks/';
     try {
       // Convert domain PlannedTask to PlannedTaskDTO and then to JSON
@@ -290,15 +290,16 @@ class Service {
       );
       // Check response status
       if (response.statusCode == 201) {
-        return true;
+        final data = jsonDecode(response.body);
+        return PlannedTask.fromDTO(PlannedTaskDTO.fromJson(data));
       } else {
         log('Failed to create planned task. Status: ${response.statusCode}');
         log('Response: ${response.body}');
-        return false;
+        return null;
       }
     } catch (e) {
       log('Error creating planned task: $e');
-      return false;
+      return null;
     }
   }
 
