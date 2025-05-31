@@ -47,21 +47,21 @@ class ProfilePageState extends State<ProfilePage> {
                   Column(
                     children: [
                       SizedBox(height: 4),
-                      Text('Individual\n40 pts', textAlign: TextAlign.center),
+                      Text('Individual\n180 pts', textAlign: TextAlign.center),
                     ],
                   ),
                   SizedBox(width: 40),
                   Column(
                     children: [
                       SizedBox(height: 4),
-                      Text('Teamwork\n20 pts', textAlign: TextAlign.center),
+                      Text('Teamwork\n120 pts', textAlign: TextAlign.center),
                     ],
                   ),
                 ],
               ),
               SizedBox(height: 20),
               Text(
-                'Total Points: 65',
+                'Total Points: 300',
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
