@@ -30,16 +30,20 @@ class CalendarViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void planTask(DateTime date, Task task, List<User> assignees, User assigner, points) {
+  Future<void> planTask(DateTime date, Task task, List<User> assignees, User assigner, points) async {
     if (_tasks[date] == null) {
       _tasks[date] = [];
     }
     PlannedTask plannedTask = PlannedTask(
       id: 0, startTime: date, task: task, assignees: assignees, assigner: assigner, points: points);
     _tasks[date]?.add(plannedTask);
-
     notifyListeners();
-  }
+    bool success = await Service.createPlannedTask(plannedTask);
+    if (!success) {
+      _tasks[date]?.remove(plannedTask);
+      notifyListeners();
+    }
+}
 
   void removeTask(DateTime date, PlannedTask task) {
     if (_tasks[date] == null) {
@@ -148,6 +152,7 @@ class PlannedTask {
     _id = id;
     _task = task;
     _assignees = assignees;
+    _assigner = assigner;
     _points = points;
     _startTime = startTime;
     if (status != null) {
