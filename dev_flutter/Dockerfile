@@ -10,7 +10,7 @@ RUN flutter pub get
 
 COPY . .
 
-# (Optional) Build the app for Android
+# Build the app for Android
 RUN flutter build apk
 
 # Run the app
