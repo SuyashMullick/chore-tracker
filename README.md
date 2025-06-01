@@ -27,12 +27,20 @@ EqualChores is a mobile application that promotes equal distribution of chores a
 
 1. Install Android Studio: https://developer.android.com/studio
 
-2. Set up the required SDKs and Android tools.
+2. Set up the required SDKs and Android tools. Ensure that you have the following tools:
+    
+    - Android SDK
+    - Android SDK Platform-Tools
+    - Android Emulator
+    - AVD Manager
+    - cmdline-tools
 
-3. Create and configure an Android emulator (or use a physical Android device with USB debugging enabled).
+3. Create and configure an Android emulator by clicking on **More Actions -> Virtual Device Manager** if this is the first time launching Android Studio. 
+    (or use a physical Android device with USB debugging enabled).
 
 ## Running the Project
 
+Ensure that you add both equalchores-backend.tar and equalchores-frontend.tar to the root directory of this project.
 
 ### Backend
 
@@ -58,11 +66,11 @@ To run the frontend app:
 
 1. Start your Android emulator or connect a real device.
 
-2. Install the prebuilt APK:
+2. Ensure adb is installed and accessible via terminal. It comes with the Android SDK Platform Tools.
 
-    `adb install path/to/app-release.apk`
+3. Install the prebuilt APK:
 
-3. Ensure adb is installed and accessible via terminal. It comes with the Android SDK Platform Tools.
+    `adb install -r path/to/app-release.apk`
 
 #### Running on the web
 
@@ -74,14 +82,43 @@ To run the frontend app:
 
 2. Open http://localhost:8080 in a browser.
 
-## Building the Docker Image
+## Building the Docker Images
 
 If you want to build the Docker image yourself:
 
-1. Navigate to the backend/ directory.
+1. Navigate to the root directory of the project.
 
-2. Run the following command:
+2. Run the following command to build the docker images:
 
-    `docker build -t equalchores-backend .`
+    `docker-compose build`
 
 [Note: Building the image will take approximately 7–9 minutes, depending on your system.]
+
+### Backend
+
+1. Once the build is complete, you can run the backend server using:
+
+    `docker run -p 8000:8000 --env-file .env equalchores-backend:latest`
+
+Make sure to place a valid .env file in the root directory before running the container.
+
+### Frontend
+
+1. To run the frontend image, run this command:
+
+    `docker run -it equalchores-flutter:latest`
+
+    (or the correct image name)
+
+2. To copy the generated .apk file (for the Flutter frontend) from the container to your local machine, use:
+
+    `docker cp <container_name_or_id>:/app/build/app/outputs/flutter-apk/app-release.apk ./app-release.apk`
+
+Replace <container_name_or_id> with the correct ID or name of the running frontend container.
+
+    (Note: The previous command opens an interactive bash shell where you can search for the .apk if the path is incorrect. 
+    This can be done using:
+
+    `find / -name "app-release.apk" 2>/dev/null`)
+
+3. Then, follow the instructions in the 'Installing the .apk file' section.
